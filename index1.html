@@ -1,0 +1,1768 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRICOL S.A. — Inventario Semanal</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23B01E23'/%3E%3Ctext x='16' y='23' font-family='Arial Black' font-size='19' font-weight='900' fill='white' text-anchor='middle'%3EG%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script>
+<script>
+(function(){
+  if(window.lucide) return;
+  var s=document.createElement('script');
+  s.src='https://unpkg.com/lucide@0.263.1/dist/umd/lucide.min.js';
+  s.onload=function(){ try{ if(typeof icons==='function') icons(); }catch(e){} };
+  document.head.appendChild(s);
+})();
+</script>
+<style>
+/* ============ BASE ============ */
+:root{
+  --r-950:#43060A; --r-900:#5F0A0F; --r-800:#7C0F14; --r-700:#9A141A;
+  --r-600:#B01E23; --r-500:#C8231F;
+  --ink:#1D1414; --paper:#FFFFFF; --dim:#F7F0EB; --line:#E7DCD6; --mut:#8A7773;
+  --amber:#B26A00; --amber-bg:#FFF6E5;
+  --fd:'Oswald',sans-serif; --fu:'Archivo',sans-serif; --fm:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--fu);background:var(--r-800);color:var(--ink);font-size:15px;line-height:1.45}
+button{font-family:inherit;cursor:pointer;background:none;border:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
+i[data-lucide]{display:inline-block}
+.num{font-variant-numeric:tabular-nums}
+::selection{background:var(--r-600);color:#fff}
+
+/* ============ BOTONES / INPUTS ============ */
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--fd);font-weight:600;
+  font-size:13px;letter-spacing:.1em;text-transform:uppercase;padding:11px 18px;
+  border:2px solid var(--ink);background:var(--paper);color:var(--ink);
+  box-shadow:3px 3px 0 var(--ink);transition:transform .08s,box-shadow .08s;user-select:none}
+.btn:hover{background:var(--dim)}
+.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.btn.primary{background:var(--r-600);border-color:var(--ink);color:#fff}
+.btn.primary:hover{background:var(--r-500)}
+.btn.red{background:var(--r-600);color:#fff}
+.btn.small{padding:7px 12px;font-size:11px;box-shadow:2px 2px 0 var(--ink)}
+.btn.small:active{transform:translate(2px,2px)}
+.btn.icon{padding:8px;border:1.5px solid var(--ink);box-shadow:none;background:#fff}
+.btn.icon:hover{background:var(--dim)}
+.btn.icon.danger:hover{background:var(--r-600);color:#fff;border-color:var(--r-600)}
+.btn:disabled{opacity:.4;pointer-events:none}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-family:var(--fd);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+.field label b{color:var(--r-600)}
+.input{border:1.5px solid var(--ink);background:#fff;padding:10px 12px;outline:none;width:100%;border-radius:0}
+.input:focus{border-color:var(--r-600);box-shadow:3px 3px 0 var(--r-600)}
+textarea.input{resize:vertical;min-height:64px}
+.ferr{font-size:12px;color:var(--r-600);font-weight:600;display:none}
+.ferr.show{display:block}
+
+/* ============ LOGIN ============ */
+.login{min-height:100vh;display:grid;grid-template-columns:1.15fr 1fr}
+.lg-brand{background:var(--r-800);color:#fff;padding:56px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.lg-brand::after{content:'G';position:absolute;right:-70px;bottom:-120px;font-family:var(--fd);font-weight:700;font-size:560px;line-height:1;color:var(--r-900);pointer-events:none}
+.lg-kicker{font-family:var(--fm);font-size:12px;letter-spacing:.28em;border-bottom:2px solid #fff;padding-bottom:14px;display:inline-block}
+.lg-word{font-family:var(--fd);font-weight:700;font-size:clamp(64px,9vw,124px);line-height:.92;letter-spacing:.01em;margin-top:26px;position:relative;z-index:1}
+.lg-word small{display:block;font-size:.32em;font-weight:500;letter-spacing:.5em;color:#fff;opacity:.85;margin-top:10px}
+.lg-sub{max-width:420px;margin-top:28px;font-size:15px;color:#F3DEDC;position:relative;z-index:1}
+.lg-foot{font-family:var(--fm);font-size:11px;letter-spacing:.18em;color:#E8C7C4;position:relative;z-index:1}
+.lg-panel{background:var(--paper);display:flex;align-items:center;justify-content:center;padding:40px;border-left:6px solid var(--r-600)}
+.lg-card{width:100%;max-width:360px}
+.lg-card h2{font-family:var(--fd);font-size:26px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.lg-card .rule{height:3px;background:var(--ink);margin:14px 0 26px}
+.lg-hint{margin-top:22px;border:1.5px dashed var(--mut);padding:10px 12px;font-family:var(--fm);font-size:12px;color:var(--mut)}
+.lg-hint b{color:var(--ink)}
+.lg-err{display:none;margin-top:14px;border-left:4px solid var(--r-600);background:#FBEDEC;padding:9px 12px;font-size:13px;font-weight:600;color:var(--r-700)}
+.lg-err.show{display:block}
+.pw-wrap{position:relative}
+.pw-wrap .input{padding-right:42px}
+.pw-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:6px;color:var(--mut)}
+
+/* ============ SHELL APP ============ */
+.app{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+.sidebar{background:var(--r-950);color:#fff;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;border-right:4px solid var(--r-600)}
+.sb-logo{padding:22px 20px;border-bottom:1px solid rgba(255,255,255,.14);display:flex;align-items:center;gap:12px}
+.sb-mark{width:38px;height:38px;background:#fff;color:var(--r-600);font-family:var(--fd);font-weight:700;font-size:22px;display:flex;align-items:center;justify-content:center;flex:none}
+.sb-logo .t1{font-family:var(--fd);font-weight:600;font-size:17px;letter-spacing:.06em;line-height:1.1}
+.sb-logo .t2{font-family:var(--fm);font-size:10px;letter-spacing:.24em;color:#E8C7C4}
+.sb-nav{flex:1;padding:14px 0;overflow-y:auto}
+.nav-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 20px;color:#F0DCDA;font-family:var(--fd);font-weight:500;font-size:14px;letter-spacing:.09em;text-transform:uppercase;border-left:4px solid transparent}
+.nav-btn .n{font-family:var(--fm);font-size:10px;color:#C98F8B;width:18px}
+.nav-btn:hover{background:var(--r-900)}
+.nav-btn.active{background:#fff;color:var(--r-700);border-left-color:var(--r-600)}
+.nav-btn.active .n{color:var(--r-600)}
+.nav-btn i{width:17px;height:17px}
+.sb-user{border-top:1px solid rgba(255,255,255,.14);padding:16px 20px;display:flex;align-items:center;gap:10px}
+.sb-user .av{width:32px;height:32px;background:var(--r-600);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:700;flex:none}
+.sb-user .un{font-family:var(--fm);font-size:12px;letter-spacing:.06em}
+.sb-user .rl{font-size:10px;color:#C98F8B;letter-spacing:.14em;text-transform:uppercase}
+.sb-exit{margin-left:auto;color:#E8C7C4;padding:6px}
+.sb-exit:hover{color:#fff}
+.main{background:var(--paper);min-width:0}
+.wrap{max-width:1160px;margin:0 auto;padding:38px 44px 80px}
+
+/* Encabezado de sección */
+.sec-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:30px}
+.sec-num{font-family:var(--fm);font-size:13px;color:var(--r-600);font-weight:600}
+.sec-head h1{font-family:var(--fd);font-weight:600;font-size:clamp(24px,3vw,34px);letter-spacing:.03em;text-transform:uppercase;line-height:1}
+.sec-rule{flex:1;height:3px;background:var(--ink);min-width:60px}
+.sec-meta{font-family:var(--fm);font-size:12px;letter-spacing:.1em;color:var(--mut)}
+
+/* ============ PESTAÑAS MANUAL / IMPORTAR ============ */
+.modebar{display:flex;border:2px solid var(--ink);width:max-content;max-width:100%;margin-bottom:26px;background:#fff;overflow-x:auto}
+.modebar button{font-family:var(--fd);font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+  padding:11px 22px;display:inline-flex;gap:8px;align-items:center;color:var(--mut);white-space:nowrap}
+.modebar button.on{background:var(--ink);color:#fff}
+.modebar button i{width:15px;height:15px}
+
+/* ============ SELLOS ============ */
+.stamp{display:inline-block;font-family:var(--fd);font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  border:3px solid currentColor;padding:.3em .65em;transform:rotate(-3.5deg);filter:url(#rough);background:transparent}
+.stamp.big{font-size:clamp(20px,2.4vw,27px)}
+.stamp.sm{font-size:11px;border-width:2px;padding:.2em .5em;transform:rotate(-2deg)}
+@keyframes stampIn{0%{transform:rotate(-3.5deg) scale(1.7);opacity:0}55%{transform:rotate(-3.5deg) scale(.94);opacity:1}100%{transform:rotate(-3.5deg) scale(1)}}
+.stamp.animate{animation:stampIn .28s cubic-bezier(.2,1.4,.4,1)}
+.c-fixed{color:var(--ink)} .c-import{color:var(--r-600)} .c-assay{color:var(--r-700)}
+.c-move{color:#6B5A56} .c-release{color:var(--r-500)}
+.c-excess{color:var(--amber)}
+
+/* ============ ETIQUETAS ============ */
+.tag{display:inline-flex;align-items:center;gap:7px;font-family:var(--fd);font-size:11px;font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase;padding:3px 9px;border:1.5px solid currentColor;white-space:nowrap}
+.tag .stripes{width:15px;height:9px;border:1px solid currentColor;background:repeating-linear-gradient(45deg,currentColor 0 2.5px,transparent 2.5px 5.5px)}
+.t-fixed{color:var(--ink)} .t-import{background:var(--r-600);border-color:var(--r-600);color:#fff}
+.t-assay{color:var(--r-700)} .t-move{color:#5C4C48;background:var(--dim)}
+.t-release{color:var(--r-500)} .t-out{color:var(--r-600);border-style:dashed}
+.t-excess{background:var(--amber);border-color:var(--amber);color:#fff}
+
+/* ============ PANELES / BANDAS ============ */
+.band{display:flex;flex-wrap:wrap;border:2px solid var(--ink);margin-bottom:34px;background:#fff}
+.kpi{padding:20px 26px;flex:1 1 150px;border-right:1.5px solid var(--line);min-width:140px}
+.kpi:last-child{border-right:none}
+.kpi .v{font-family:var(--fd);font-weight:700;font-size:42px;line-height:1}
+.kpi .v.alert{color:var(--r-600)}
+.kpi .v.amber{color:var(--amber)}
+.kpi .l{font-family:var(--fd);font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);margin-top:6px}
+.kpi.hero{flex:2 1 220px;background:var(--r-600);color:#fff;border-right:1.5px solid var(--ink)}
+.kpi.hero .l{color:#F6D9D6}
+.kpi.hero .v{font-size:56px}
+.kpi.hero small{font-family:var(--fm);font-size:12px;letter-spacing:.1em}
+
+.panel{border:2px solid var(--ink);background:#fff;margin-bottom:30px}
+.panel-head{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:2px solid var(--ink);flex-wrap:wrap}
+.panel-head .idx{font-family:var(--fm);font-size:12px;font-weight:600;color:var(--r-600)}
+.panel-head h3{font-family:var(--fd);font-weight:600;font-size:16px;letter-spacing:.1em;text-transform:uppercase}
+.panel-head .spacer{flex:1}
+.panel-body{padding:18px}
+.empty{padding:34px;text-align:center;color:var(--mut)}
+.empty i{width:34px;height:34px;margin-bottom:10px;color:var(--mut)}
+.empty p{font-size:14px}
+
+.cols{display:grid;grid-template-columns:1.7fr 1fr;gap:26px;align-items:start}
+
+.alist{list-style:none}
+.alist li{display:flex;gap:14px;align-items:flex-start;padding:12px 4px;border-bottom:1px solid var(--line)}
+.alist li:last-child{border-bottom:none}
+.alist .ix{font-family:var(--fm);font-size:12px;color:var(--r-600);font-weight:600;padding-top:3px;width:22px;flex:none}
+.alist .body{flex:1;min-width:0}
+.alist .r1{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.alist .ref{font-family:var(--fm);font-weight:600;font-size:13px}
+.alist .why{font-size:12.5px;color:var(--mut);margin-top:3px}
+.linkish{font-family:var(--fm);font-size:11.5px;color:var(--r-600);text-decoration:underline;text-underline-offset:3px}
+
+.hbar{display:grid;grid-template-columns:150px 1fr 34px;align-items:center;gap:10px;padding:7px 0;font-size:13px}
+.hbar .bl{font-family:var(--fd);font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hbar .track{height:14px;border:1px solid var(--ink);background:#fff;position:relative}
+.hbar .fill{position:absolute;inset:1px auto 1px 1px;background:var(--ink)}
+.hbar .fill.f-import{background:var(--r-600)}
+.hbar .fill.f-assay{background:var(--r-700)}
+.hbar .fill.f-move{background:repeating-linear-gradient(45deg,var(--ink) 0 3px,transparent 3px 7px)}
+.hbar .fill.f-release{background:repeating-linear-gradient(45deg,var(--r-500) 0 3px,transparent 3px 7px)}
+.hbar .fill.f-excess{background:var(--amber)}
+.hbar .bn{font-family:var(--fm);font-size:12px;text-align:right;font-weight:600}
+
+/* ============ FORMULARIO ============ */
+.fgrid{display:grid;grid-template-columns:1.5fr 1fr;gap:30px;align-items:start}
+.fcard{border:2px solid var(--ink);background:#fff;padding:26px}
+.frows{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.frows .full{grid-column:1/-1}
+.verdict{border:2px solid var(--ink);background:var(--dim);position:sticky;top:24px}
+.vd-head{border-bottom:2px solid var(--ink);padding:11px 16px;font-family:var(--fd);font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;background:#fff}
+.vd-stage{padding:30px 20px 22px;display:flex;flex-direction:column;align-items:center;gap:14px;min-height:150px;justify-content:center}
+.vd-idle{font-family:var(--fm);font-size:12.5px;color:var(--mut);text-align:center}
+.vd-reason{font-size:12.5px;color:var(--mut);text-align:center;max-width:260px}
+.vd-excess{margin:0 16px 14px;border-left:4px solid var(--amber);background:var(--amber-bg);padding:9px 12px;font-size:12.5px;color:var(--amber);font-weight:600;display:none}
+.vd-excess.show{display:block}
+.vd-dup{margin:0 16px 14px;border-left:4px solid var(--r-600);background:#fff;padding:9px 12px;font-size:12.5px;color:var(--r-700);font-weight:600;display:none}
+.vd-dup.show{display:block}
+.rules{list-style:none;border-top:2px solid var(--ink);background:#fff}
+.rules li{display:flex;gap:10px;align-items:center;padding:9px 16px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--mut)}
+.rules li:last-child{border-bottom:none}
+.rules .rn{font-family:var(--fm);font-size:10.5px;width:20px;flex:none}
+.rules .rt{flex:1}
+.rules li.hit{background:var(--r-600);color:#fff;font-weight:600}
+.rules li.hit .rn{color:#F6D9D6}
+.rules li.hit .rt::after{content:'— aplica';font-family:var(--fm);font-size:10px;margin-left:6px;opacity:.85}
+
+/* ============ IMPORTAR DESDE EXCEL ============ */
+.imp-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:26px;align-items:start}
+.pastebox{width:100%;min-height:180px;border:1.5px solid var(--ink);padding:12px;font-family:var(--fm);
+  font-size:12.5px;outline:none;resize:vertical;background:#fff;line-height:1.6}
+.pastebox:focus{border-color:var(--r-600);box-shadow:3px 3px 0 var(--r-600)}
+.orline{display:flex;align-items:center;gap:12px;color:var(--mut);font-family:var(--fm);font-size:11px;letter-spacing:.2em;margin:16px 0}
+.orline::before,.orline::after{content:'';flex:1;height:1px;background:var(--line)}
+.steps{list-style:none;counter-reset:st}
+.steps li{counter-increment:st;display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.steps li:last-child{border-bottom:none}
+.steps li::before{content:counter(st,decimal-leading-zero);font-family:var(--fm);font-size:12px;color:var(--r-600);font-weight:600;padding-top:1px;flex:none}
+tr.imp-bad td{background:#FBEDEC!important}
+tr.imp-bad td:first-child{border-left:4px solid var(--r-600)}
+.state-ok{color:#1E6B33;font-weight:600;font-size:12px}
+.state-bad{color:var(--r-600);font-weight:600;font-size:12px}
+.state-warn{color:var(--amber);font-weight:600;font-size:12px}
+
+/* ============ TABLAS ============ */
+.tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead th{font-family:var(--fd);font-weight:600;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;
+  text-align:left;padding:10px 10px;border-top:2px solid var(--ink);border-bottom:1.5px solid var(--ink);white-space:nowrap;background:#fff}
+tbody td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:hover td{background:#FBF6F2}
+td.mono,.mono{font-family:var(--fm);font-weight:600;font-size:12.5px}
+td.r,th.r{text-align:right}
+td .sub{display:block;font-family:var(--fm);font-size:10.5px;color:var(--mut);font-weight:400;margin-top:2px}
+td .obs{display:block;font-size:12px;color:var(--mut);margin-top:2px;max-width:260px}
+tfoot td{padding:11px 10px;border-top:2px solid var(--ink);font-family:var(--fd);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:12px}
+.rowacts{display:flex;gap:6px;justify-content:flex-end}
+
+/* Filtros */
+.filters{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:18px}
+.searchbox{position:relative;flex:1 1 220px;min-width:200px}
+.searchbox i{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--mut)}
+.searchbox .input{padding-left:34px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--fd);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  border:1.5px solid var(--ink);padding:6px 11px;background:#fff;display:inline-flex;gap:7px;align-items:center}
+.chip .cn{font-family:var(--fm);font-size:10px;color:var(--mut)}
+.chip:hover{background:var(--dim)}
+.chip.on{background:var(--ink);color:#fff}
+.chip.on .cn{color:#D8C8C4}
+.sel{border:1.5px solid var(--ink);background:#fff;padding:9px 10px;outline:none}
+.sel:focus{border-color:var(--r-600)}
+
+/* Comparativo */
+.cmp-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+.cmp-arrow{font-family:var(--fd);font-size:20px;font-weight:600;display:flex;align-items:center;gap:10px}
+.cmp-arrow .wk{font-family:var(--fm);font-size:14px;border:1.5px solid var(--ink);padding:4px 10px;background:var(--dim)}
+.delta{font-family:var(--fm);font-weight:600;font-size:13px;border:1.5px solid;padding:3px 9px}
+.delta.up{color:#1E6B33;border-color:#1E6B33}
+.delta.down{color:var(--r-600);border-color:var(--r-600)}
+.warnline{border:1.5px dashed var(--mut);padding:12px 16px;font-size:13.5px;color:var(--mut);margin-bottom:24px}
+
+/* Reportes subnav */
+.subnav{display:flex;gap:2px;flex-wrap:wrap;border-bottom:2px solid var(--ink);margin-bottom:24px}
+.subnav button{font-family:var(--fd);font-size:12.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:10px 16px;border:2px solid transparent;border-bottom:none;color:var(--mut);margin-bottom:-2px}
+.subnav button:hover{color:var(--ink)}
+.subnav button.on{border-color:var(--ink);background:#fff;color:var(--r-600)}
+.grp-head{display:flex;align-items:baseline;gap:12px;margin:26px 0 10px}
+.grp-head:first-child{margin-top:0}
+.grp-head h4{font-family:var(--fd);font-size:15px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.grp-head .gl{flex:1;height:1.5px;background:var(--ink)}
+.grp-head .gc{font-family:var(--fm);font-size:11.5px;color:var(--mut)}
+
+/* Bitácora */
+.logline{display:flex;gap:14px;padding:10px 4px;border-bottom:1px solid var(--line);font-size:13px;align-items:baseline}
+.logline:last-child{border-bottom:none}
+.logline .lt{font-family:var(--fm);font-size:11px;color:var(--mut);width:120px;flex:none}
+.logline .lk{font-family:var(--fd);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid var(--ink);padding:2px 8px;flex:none}
+.logline .lk.a-ingreso{background:var(--ink);color:#fff}
+.logline .lk.a-baja{background:var(--r-600);border-color:var(--r-600);color:#fff}
+.logline .lk.a-importación{background:var(--r-700);border-color:var(--r-700);color:#fff}
+.logline .lk.a-excedente{background:var(--amber);border-color:var(--amber);color:#fff}
+.logline .lm{flex:1}
+
+/* Ajustes */
+.set-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+.loc-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.loc-chip{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--ink);padding:6px 6px 6px 12px;font-family:var(--fm);font-size:12px;background:#fff}
+.loc-chip button{padding:3px;color:var(--r-600)}
+.loc-chip button:hover{background:var(--r-600);color:#fff}
+.addrrow{display:flex;gap:10px;margin-top:14px}
+.catrow{display:grid;grid-template-columns:1fr 90px 90px 40px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.catrow:last-child{border-bottom:none}
+.catrow .cr{font-family:var(--fm);font-weight:600;font-size:12.5px}
+.catrow .ct{font-family:var(--fd);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+
+/* Toasts */
+#toasts{position:fixed;right:20px;bottom:20px;z-index:200;display:flex;flex-direction:column;gap:10px;max-width:360px}
+.toast{background:var(--ink);color:#fff;padding:13px 16px 13px 14px;border-left:5px solid var(--r-500);
+  font-size:13.5px;box-shadow:5px 5px 0 rgba(0,0,0,.25);animation:tin .25s cubic-bezier(.2,1.2,.4,1);display:flex;gap:10px;align-items:flex-start}
+.toast.ok{border-left-color:#2E8B4A}
+.toast.err{border-left-color:var(--r-500)}
+.toast.warn{border-left-color:var(--amber)}
+.toast i{width:16px;height:16px;flex:none;margin-top:2px}
+@keyframes tin{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+.toast.out{transition:.3s;opacity:0;transform:translateX(30px)}
+
+/* Modal */
+#modal-root{position:fixed;inset:0;z-index:150;display:none}
+#modal-root.open{display:flex;align-items:center;justify-content:center;padding:20px}
+.m-overlay{position:absolute;inset:0;background:rgba(35,8,10,.62)}
+.m-box{position:relative;background:#fff;border:2px solid var(--ink);box-shadow:8px 8px 0 rgba(0,0,0,.35);
+  width:100%;max-width:560px;max-height:92vh;overflow-y:auto;animation:min .2s cubic-bezier(.2,1.2,.4,1)}
+@keyframes min{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+.m-head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:2px solid var(--ink)}
+.m-head h3{font-family:var(--fd);font-size:16px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;flex:1}
+.m-body{padding:22px 20px}
+.m-foot{display:flex;justify-content:flex-end;gap:12px;padding:16px 20px;border-top:1.5px solid var(--line)}
+
+.blank{border:2px dashed var(--mut);padding:60px 30px;text-align:center}
+.blank .big{font-family:var(--fd);font-size:22px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin:14px 0 6px}
+.blank p{color:var(--mut);max-width:420px;margin:0 auto 22px}
+
+/* Lista de mantener referencias */
+.keep-list{max-height:400px;overflow-y:auto;border:1.5px solid var(--line)}
+.keep-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px}
+.keep-row:last-child{border-bottom:none}
+.keep-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--r-600);flex:none}
+.keep-row .kr{font-family:var(--fm);font-weight:600;font-size:12.5px;width:120px}
+.keep-row .kd{flex:1;color:var(--mut);font-size:12px}
+.keep-row .kq{font-family:var(--fm);font-size:12px;font-weight:600}
+.keep-row .kl{font-family:var(--fd);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border:1.5px solid var(--ink);padding:2px 7px}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:960px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:sticky;top:0;height:auto;flex-direction:row;align-items:center;z-index:50;border-right:none;border-bottom:4px solid var(--r-600)}
+  .sb-logo{border-bottom:none;padding:12px 16px}
+  .sb-nav{display:flex;padding:0;overflow-x:auto;flex:1}
+  .nav-btn{width:auto;border-left:none;border-bottom:4px solid transparent;padding:16px 13px;white-space:nowrap}
+  .nav-btn.active{border-bottom-color:var(--r-600)}
+  .nav-btn .n,.nav-btn span.lbl{display:none}
+  .sb-user{border-top:none;padding:8px 14px 8px 4px}
+  .sb-user .info{display:none}
+  .wrap{padding:26px 18px 70px}
+  .fgrid,.cols,.set-grid,.imp-grid{grid-template-columns:1fr}
+  .verdict{position:static}
+  .login{grid-template-columns:1fr}
+  .lg-brand{display:none}
+  .kpi .v{font-size:32px}.kpi.hero .v{font-size:38px}
+  .modebar{width:100%}
+}
+@media print{
+  body{background:#fff}
+  .sidebar,.no-print,#toasts,#modal-root{display:none!important}
+  .app{display:block}
+  .wrap{padding:0;max-width:none}
+  .panel,.band,.fcard{border-color:#000}
+  thead th{border-color:#000}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.07" numOctaves="2" result="n" seed="7"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.2"/></filter>
+</svg>
+
+<div id="root"></div>
+<div id="toasts"></div>
+<div id="modal-root"><div class="m-overlay" onclick="closeModal()"></div><div class="m-box" id="m-box"></div></div>
+<script>
+/* ================================================================
+   GRICOL S.A. — Inventario Semanal · aplicación local (localStorage)
+   VERSIÓN CON CATÁLOGO DE CANTIDADES ESTÁNDAR Y CONTROL DE EXCEDENTES
+   ================================================================ */
+
+// ---------- Utilidades ----------
+const $  = (s,el=document)=>el.querySelector(s);
+const $$ = (s,el=document)=>[...el.querySelectorAll(s)];
+const esc = s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+function icons(){ if(window.lucide){ try{ lucide.createIcons(); }catch(e){} } }
+function b64(s){ try{ return btoa(unescape(encodeURIComponent(String(s)))); }catch(e){ return ''; } }
+function lsGet(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v); }catch(e){ return d; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+function lsRawGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsRawSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function lsRawDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+function sessGet(){ try{ return sessionStorage.getItem('gricol_session'); }catch(e){ return null; } }
+function sessSet(){ try{ sessionStorage.setItem('gricol_session','1'); }catch(e){} }
+function sessClear(){ try{ sessionStorage.removeItem('gricol_session'); }catch(e){} }
+
+const MS_W = 7*86400000;
+function isoWeekOf(ms){
+  const d=new Date(ms); const dn=d.getUTCDay()||7;
+  d.setUTCDate(d.getUTCDate()+4-dn);
+  const ys=new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return {year:d.getUTCFullYear(), week:Math.ceil(((d-ys)/86400000+1)/7)};
+}
+const weekKeyOf = ms=>{const{year,week}=isoWeekOf(ms);return `${year}-S${String(week).padStart(2,'0')}`};
+const nowWK = ()=>weekKeyOf(Date.now());
+const parseWK = k=>{const[y,w]=k.split('-S');return{year:+y,week:+w}};
+const dateOfWK = k=>{const{year,week}=parseWK(k);return new Date(Date.UTC(year,0,1+(week-1)*7))};
+const prevWK = k=>weekKeyOf(dateOfWK(k).getTime()-MS_W);
+const weeksDiff = (a,b)=>Math.round((dateOfWK(b)-dateOfWK(a))/MS_W);
+const fmtW = k=>{const{year,week}=parseWK(k);return `Semana ${String(week).padStart(2,'0')} · ${year}`};
+const fmtTs = ts=>{const d=new Date(ts);return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`};
+
+// ---------- Almacenamiento ----------
+const DEF_LOCS = ['Bodega Central','Zona de Muestras','Oficina Técnica','Andén 1','Andén 2','Cuarentena','Patio de Cargas'];
+const TIPOS = ['Materia prima','Producto terminado','Empaque','Repuesto','Muestra','Herramental','Otro'];
+const store = {
+  get items(){ return lsGet('gricol_items',[]) },
+  set items(v){ lsSet('gricol_items',v) },
+  get log(){ return lsGet('gricol_log',[]) },
+  set log(v){ lsSet('gricol_log',v.slice(0,200)) },
+  get locs(){ return lsGet('gricol_locs',DEF_LOCS) },
+  set locs(v){ lsSet('gricol_locs',v) },
+  get cfg(){ return lsGet('gricol_cfg',{threshold:3}) },
+  set cfg(v){ lsSet('gricol_cfg',v) },
+  get auth(){ return lsGet('gricol_auth',{user:'admin',hash:b64('gricol2025')}) },
+  set auth(v){ lsSet('gricol_auth',v) },
+  // Catálogo de cantidades estándar: { "IMP-0450": 24, "ENS-0088": 4, "FIJ-1201": 240 }
+  get catalogo(){ return lsGet('gricol_catalogo',{}) },
+  set catalogo(v){ lsSet('gricol_catalogo',v) },
+  // Fijas registradas (para repetir automáticamente)
+  get fijas(){ return lsGet('gricol_fijas',{}) },
+  set fijas(v){ lsSet('gricol_fijas',v) },
+  // Última semana en que se preguntó "¿mantener referencias?"
+  get lastPrompt(){ return lsGet('gricol_lastprompt','') },
+  set lastPrompt(v){ lsSet('gricol_lastprompt',v) },
+};
+function logEvent(type,msg){ const L=store.log; L.unshift({ts:Date.now(),type,msg}); store.log=L; }
+
+// ---------- Clasificación base (solo por referencia) ----------
+function firstSeenWeek(ref){
+  let best=null;
+  for(const it of store.items) if(it.ref===ref && (best===null || it.week<best)) best=it.week;
+  return best;
+}
+function classifyBase(ref,tipo,wk){
+  const r=(ref||'').toUpperCase(), th=store.cfg.threshold;
+  if(/^ENS-/.test(r)||r.includes('ENSAYO'))
+    return {kind:'assay', label:'Muestra para ensayo', rule:1, reason:'La referencia coincide con la regla 1 (prefijo ENS- / "ENSAYO")'};
+  if(/^IMP-/.test(r)||r.includes('IMPORT'))
+    return {kind:'import', label:'Muestra de importación', rule:2, reason:'La referencia coincide con la regla 2 (prefijo IMP- / "IMPORT")'};
+  if(/^FIJ-/.test(r)||r.includes('FIJO'))
+    return {kind:'fixed', label:'Inventario fijo', rule:3, reason:'La referencia coincide con la regla 3 (prefijo FIJ- / "FIJO")'};
+  const seen=firstSeenWeek(ref||'');
+  const w=seen ? Math.max(0,weeksDiff(seen,wk)) : 0;
+  if(seen && w>=th)
+    return {kind:'release', label:'Liberar', rule:4, weeks:w, reason:`Sin clasificar · ${w} semana${w===1?'':'s'} en bodega (umbral: ${th}) → se sugiere liberar`};
+  return {kind:'move', label:'Trasladar', rule:4, weeks:w,
+          reason: seen ? `Sin clasificar · ${w} semana${w===1?'':'s'} en bodega → trasladar a zona definida` : 'Referencia nueva sin coincidencia con las reglas 1–3 → revisar y trasladar'};
+}
+
+// ---------- Clasificación con control de excedente ----------
+// Devuelve: { kind, label, reason, rule, excedente, faltante, cantidadBase, catalogoOK, esExcedente }
+function classify(ref,tipo,wk,cantidad){
+  const base=classifyBase(ref,tipo,wk);
+  const r=(ref||'').toUpperCase();
+  const cat=store.catalogo;
+  const esMuestra = base.kind==='import' || base.kind==='assay';
+  const esFija   = base.kind==='fixed';
+
+  // Si es un ítem de excedente ya creado aparte, no volver a calcular
+  if(/-EXC$/.test(r)){
+    return {...base, excedente:null, faltante:null, cantidadBase:null, catalogoOK:true, esExcedente:true,
+      label:'Liberar (excedente)', kind:'release', reason:'Excedente de una muestra de importación o ensayo → liberar del inventario base'};
+  }
+
+  // Fijas: solo validar que existan en catálogo
+  if(esFija){
+    if(cat[ref]!=null && cantidad!=null && Number(cantidad)!==cat[ref]){
+      return {...base, cantidadBase:cat[ref], excedente:null, faltante:cat[ref]-Number(cantidad), catalogoOK:true,
+        reason:`Inventario fijo · cantidad estándar: ${cat[ref]} und. Ingresada: ${cantidad}.`};
+    }
+    return {...base, cantidadBase:cat[ref]??null, excedente:null, faltante:null, catalogoOK:cat[ref]!=null};
+  }
+
+  // Muestras (import / assay): validar contra catálogo
+  if(esMuestra){
+    if(cat[ref]==null){
+      return {...base, cantidadBase:null, excedente:null, faltante:null, catalogoOK:false,
+        reason: base.reason + ' · Esta referencia no está en el catálogo de cantidades estándar.'};
+    }
+    const baseQty=Number(cat[ref]);
+    const q=Number(cantidad);
+    if(cantidad==null || isNaN(q)) return {...base, cantidadBase:baseQty, excedente:null, faltante:null, catalogoOK:true};
+    if(q>baseQty){
+      return {...base, cantidadBase:baseQty, excedente:q-baseQty, faltante:0, catalogoOK:true,
+        reason:`${base.label} · cantidad estándar: ${baseQty} und. Excedente: ${q-baseQty} und → liberar solo el excedente.`};
+    }
+    if(q<baseQty){
+      return {...base, cantidadBase:baseQty, excedente:0, faltante:baseQty-q, catalogoOK:true,
+        reason:`${base.label} · cantidad estándar: ${baseQty} und. Faltan ${baseQty-q} und (posiblemente se sacaron del inventario base).`};
+    }
+    return {...base, cantidadBase:baseQty, excedente:0, faltante:0, catalogoOK:true,
+      reason:`${base.label} · cantidad estándar: ${baseQty} und · OK.`};
+  }
+
+  // Regla 4 normal
+  return {...base, cantidadBase:null, excedente:null, faltante:null, catalogoOK:true};
+}
+
+const RULES_TXT=[
+  'La referencia inicia con "ENS-" o contiene "ENSAYO" → Muestra para ensayo',
+  'La referencia inicia con "IMP-" o contiene "IMPORT" → Muestra de importación',
+  'La referencia inicia con "FIJ-" o contiene "FIJO" → Inventario fijo',
+  'Sin coincidencia → por antigüedad: liberar si supera el umbral de semanas, trasladar si no',
+];
+
+// ---------- Datos de ejemplo (primera visita) ----------
+function seedDemo(){
+  if(lsRawGet('gricol_seeded')) return;
+  const W0=nowWK(), W1=prevWK(W0), W2=prevWK(W1), W3=prevWK(W2);
+  const mk=(ref,desc,qty,tipo,loc,week,obs,tsOff)=>({id:uid()+'d'+tsOff,ref,desc,qty,tipo,loc,week,obs:obs||'',ts:Date.now()-tsOff});
+  store.items=[
+    mk('FIJ-1201','Perfil estructural galvanizado 6 m',240,'Materia prima','Bodega Central',W1,'Stock permanente',9e6),
+    mk('FIJ-1201','Perfil estructural galvanizado 6 m',240,'Materia prima','Bodega Central',W0,'Stock permanente',1e6),
+    mk('FIJ-0917','Rack canal estructural 100×50 mm',18,'Herramental','Bodega Central',W1,'',8e6),
+    mk('FIJ-0917','Rack canal estructural 100×50 mm',18,'Herramental','Bodega Central',W0,'',2e6),
+    mk('IMP-0450','Rodamiento esférico 22210E',36,'Repuesto','Zona de Muestras',W1,'Llegó con contenedor IMP-114',7e6),
+    mk('IMP-0450','Rodamiento esférico 22210E',36,'Repuesto','Zona de Muestras',W0,'Llegó con contenedor IMP-114',3e6),
+    mk('ENS-0088','Válvula de compuerta p/ ensayo hidráulico',4,'Muestra','Oficina Técnica',W1,'',6e6),
+    mk('ENS-0088','Válvula de compuerta p/ ensayo hidráulico',3,'Muestra','Oficina Técnica',W0,'Una unidad devuelta al proveedor',4e6),
+    mk('REF-1180','Lámina antiderrapante 1.2×2.4 m',60,'Materia prima','Andén 1',W1,'',5e6),
+    mk('REF-1180','Lámina antiderrapante 1.2×2.4 m',75,'Materia prima','Andén 1',W0,'Ingreso parcial del miércoles',2.4e6),
+    mk('REF-7702','Kit de empaques vitón 2"',30,'Repuesto','Cuarentena',W3,'Pendiente definir destino',11e6),
+    mk('REF-7702','Kit de empaques vitón 2"',30,'Repuesto','Cuarentena',W2,'Pendiente definir destino',10e6),
+    mk('REF-7702','Kit de empaques vitón 2"',30,'Repuesto','Cuarentena',W1,'Pendiente definir destino',9.5e6),
+    mk('REF-7702','Kit de empaques vitón 2"',30,'Repuesto','Cuarentena',W0,'Pendiente definir destino',2.2e6),
+    mk('REF-5540','Cinta reflectriz alta visibilidad',110,'Empaque','Patio de Cargas',W1,'',5.4e6),
+    mk('REF-5540','Cinta reflectriz alta visibilidad',110,'Empaque','Patio de Cargas',W0,'',2.1e6),
+    mk('REF-3301','Tornillería inox M12 (sobrante)',180,'Empaque','Patio de Cargas',W1,'Se despachó el viernes',4e6),
+    mk('REF-2210','Serie de bufandas NR 2" pulida',52,'Producto terminado','Cuarentena',W1,'Rechazada por calidad',3.6e6),
+    mk('IMP-0512','Sensor inductivo M12 (muestras catálogo)',24,'Muestra','Zona de Muestras',W0,'Contenedor IMP-121',1.5e6),
+    mk('ENS-0100','Manguera hidráulica p/ banco de ensayos',12,'Muestra','Oficina Técnica',W0,'Ensayo de presión programado',1.2e6),
+    mk('REF-4420','Bandeja plástica 600×400',96,'Empaque','Andén 2',W0,'Sin clasificar — tratar en reunión del lunes',1.1e6),
+  ];
+  // Catálogo de ejemplo
+  store.catalogo={
+    'FIJ-1201':240, 'FIJ-0917':18,
+    'IMP-0450':24, 'IMP-0512':24,
+    'ENS-0088':4,  'ENS-0100':12
+  };
+  store.fijas={ 'FIJ-1201':{desc:'Perfil estructural galvanizado 6 m',tipo:'Materia prima',loc:'Bodega Central'}, 'FIJ-0917':{desc:'Rack canal estructural 100×50 mm',tipo:'Herramental',loc:'Bodega Central'} };
+  store.log=[
+    {ts:Date.now()-1.0e6,type:'ingreso',msg:'IMP-0512 · Sensor inductivo M12 — 24 und en Zona de Muestras'},
+    {ts:Date.now()-1.2e6,type:'ingreso',msg:'ENS-0100 · Manguera hidráulica — 12 und en Oficina Técnica'},
+    {ts:Date.now()-2.4e6,type:'ingreso',msg:'REF-1180 · Lámina antiderrapante — +15 und en Andén 1'},
+    {ts:Date.now()-4.0e6,type:'salida',msg:'REF-3301 · Tornillería inox M12 — despacho completo (180 und)'},
+  ];
+  lsRawSet('gricol_seeded','1');
+}
+seedDemo();
+
+// ---------- Toasts / Modal ----------
+function toast(msg,type='ok',icon){
+  const t=document.createElement('div'); t.className='toast '+type;
+  t.innerHTML=`<i data-lucide="${icon|| (type==='err'?'alert-triangle': type==='warn'?'alert-triangle':'check')}"></i><span>${msg}</span>`;
+  $('#toasts').appendChild(t); icons();
+  setTimeout(()=>{t.classList.add('out'); setTimeout(()=>t.remove(),320)},3400);
+}
+function openModal(html){ $('#m-box').innerHTML=html; $('#modal-root').classList.add('open'); icons(); }
+function closeModal(){ $('#modal-root').classList.remove('open'); }
+
+// ---------- Consultas sobre datos ----------
+const itemsOfWeek = wk=>store.items.filter(i=>i.week===wk);
+function aggByRef(wk){
+  const m=new Map();
+  for(const it of itemsOfWeek(wk)){
+    if(!m.has(it.ref)) m.set(it.ref,{ref:it.ref,desc:it.desc,qty:0,loc:it.loc,tipo:it.tipo,obs:it.obs,weeks:[it.week],item:it});
+    const e=m.get(it.ref); e.qty+=Number(it.qty)||0; e.weeks.push(it.week);
+  }
+  return m;
+}
+function compareWeeks(wk){
+  const prev=prevWK(wk), A=aggByRef(prev), B=aggByRef(wk);
+  const out=[],inn=[],chg=[];
+  for(const [ref,e] of A) if(!B.has(ref)) out.push(e);
+  for(const [ref,e] of B) if(!A.has(ref)) inn.push(e);
+  for(const [ref,e] of B) if(A.has(ref)){const a=A.get(ref);
+    if(a.qty!==e.qty || a.loc!==e.loc) chg.push({ref,from:a,to:e});}
+  const q=m=>[...m.values()].reduce((s,e)=>s+e.qty,0);
+  return {prev, out, inn, chg, qA:q(A), qB:q(B), hasPrev:A.size>0};
+}
+const outSorted = o=>[...o].sort((a,b)=>a.ref.localeCompare(b.ref));
+
+// ---------- CSV ----------
+function dlCSV(name,rows){
+  const csv=rows.map(r=>r.map(c=>`"${String(c??'').replace(/"/g,'""')}"`).join(';')).join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=name; a.click(); URL.revokeObjectURL(a.href);
+}
+const CSV_HEAD=['Referencia','Descripción','Cantidad','Tipo','Clasificación','Acción','Ubicación','Semana','Observaciones'];
+const itemRow = it=>{const c=classify(it.ref,it.tipo,it.week,it.qty);
+  return [it.ref,it.desc,it.qty,it.tipo,c.label,
+    (c.kind==='move'||c.kind==='release')?'Liberar':'—',
+    it.loc,it.week,it.obs];};
+
+// ---------- Repetición automática de fijas ----------
+function repetirFijas(wk){
+  const fijas=store.fijas;
+  const yaExisten=new Set(itemsOfWeek(wk).map(i=>i.ref));
+  let added=0;
+  const nuevos=[];
+  for(const [ref,meta] of Object.entries(fijas)){
+    if(yaExisten.has(ref)) continue;
+    const qty=Number(store.catalogo[ref] ?? 0);
+    if(!qty) continue;
+    nuevos.push({id:uid(),ref,desc:meta.desc||'—',qty,tipo:meta.tipo||'Otro',loc:meta.loc||(store.locs[0]||''),week:wk,obs:'Repetido automáticamente (inventario fijo)',ts:Date.now(),auto:true});
+    added++;
+  }
+  if(nuevos.length){ store.items=[...store.items,...nuevos]; logEvent('ingreso',`Repetición automática de ${added} referencia(s) fija(s) en ${wk}`); }
+  return added;
+}
+
+// ---------- Prompt semanal de "mantener referencias" ----------
+function checkWeeklyPrompt(){
+  const wk=nowWK();
+  const last=store.lastPrompt;
+  if(last===wk) return;               // ya se preguntó esta semana
+  const prev=prevWK(wk);
+  const prevItems=itemsOfWeek(prev).filter(i=>{
+    const r=i.ref.toUpperCase();
+    return /^IMP-/.test(r)||/^ENS-/.test(r)||r.includes('IMPORT')||r.includes('ENSAYO');
+  });
+  // Si no hay nada que preguntar, marcar la semana y salir
+  if(!prevItems.length){ store.lastPrompt=wk; return; }
+  openKeepModal(wk,prevItems);
+}
+function openKeepModal(wk,prevItems){
+  const agg=new Map();
+  for(const it of prevItems){
+    if(!agg.has(it.ref)) agg.set(it.ref,{ref:it.ref,desc:it.desc,qty:0,tipo:it.tipo,loc:it.loc});
+    agg.get(it.ref).qty+=Number(it.qty)||0;
+  }
+  const rows=[...agg.values()];
+  const html=`<div class="m-head"><i data-lucide="calendar-check"></i><h3>Inicio de semana ${parseWK(wk).week} · ${parseWK(wk).year}</h3>
+    <button class="btn icon" onclick="skipKeepModal()"><i data-lucide="x"></i></button></div>
+    <div class="m-body">
+      <p style="margin-bottom:14px;font-size:13.5px">Estas referencias de <b>importación</b> y <b>ensayo</b> estaban la semana pasada. Marca las que <b>continúan</b> en esta semana. Las que desmarques se considerarán <b>salida efectiva del inventario</b>.</p>
+      <div class="keep-list" id="keep-list">
+        ${rows.map(r=>`<label class="keep-row">
+          <input type="checkbox" data-ref="${esc(r.ref)}" checked>
+          <span class="kr">${esc(r.ref)}</span>
+          <span class="kd">${esc(r.desc)}</span>
+          <span class="kq num">${r.qty} und</span>
+          <span class="kl">${/^IMP-|IMPORT/i.test(r.ref)?'Import':'Ensayo'}</span>
+        </label>`).join('')}
+      </div>
+      <p style="margin-top:12px;font-size:12px;color:var(--mut)">Las referencias <b>fijas</b> se repiten solas, no necesitas marcarlas aquí.</p>
+    </div>
+    <div class="m-foot">
+      <button class="btn" onclick="skipKeepModal()">Saltar por ahora</button>
+      <button class="btn primary" id="keep-ok"><i data-lucide="check"></i> Confirmar selección</button>
+    </div>`;
+  openModal(html);
+  $('#keep-ok').onclick=()=>{
+    const checks=$$('#keep-list input[type=checkbox]');
+    const mantener=new Set();
+    checks.forEach(c=>{ if(c.checked) mantener.add(c.dataset.ref); });
+    // Copiar las marcadas a la semana actual
+    let copiadas=0, eliminadas=0;
+    const nuevas=[];
+    const yaEnWk=new Set(itemsOfWeek(wk).map(i=>i.ref));
+    for(const it of prevItems){
+      if(mantener.has(it.ref) && !yaEnWk.has(it.ref)){
+        nuevas.push({...it,id:uid(),week:wk,ts:Date.now(),obs:(it.obs?it.obs+' · ':'')+'Mantenida de '+prevWK(wk)});
+        yaEnWk.add(it.ref);
+        copiadas++;
+      } else if(!mantener.has(it.ref)){
+        eliminadas++;
+      }
+    }
+    if(nuevas.length) store.items=[...store.items,...nuevas];
+    store.lastPrompt=wk;
+    logEvent('ingreso',`Inicio ${wk}: ${copiadas} muestra(s) mantenida(s), ${eliminadas} marcada(s) como salida`);
+    closeModal();
+    toast(`Semana ${parseWK(wk).week} iniciada. ${copiadas} muestra(s) mantenida(s).`,'ok','calendar-check');
+    renderView();
+  };
+}
+function skipKeepModal(){
+  store.lastPrompt=nowWK();
+  closeModal();
+}
+window.skipKeepModal=skipKeepModal;
+window.openModal=openModal;
+window.closeModal=closeModal;
+
+// ---------- Estado de UI ----------
+const state={
+  view:'dashboard',
+  enter:{mode:'manual',
+    ref:'',desc:'',qty:'',tipo:TIPOS[0],loc:store.locs[0]||'',week:nowWK(),obs:'',
+    imp:{text:'',week:nowWK(),loc:store.locs[0]||'',sumDup:true}},
+  inv:{q:'',cls:'all',loc:'all',week:nowWK()},
+  cmp:{week:nowWK()},
+  rep:{tab:'tipo',week:nowWK()},
+};
+
+// ================= LOGIN =================
+function renderLogin(){
+  $('#root').innerHTML=`
+  <div class="login">
+    <div class="lg-brand">
+      <div>
+        <span class="lg-kicker">CONTROL DE BODEGA — REGISTRO SEMANAL</span>
+        <div class="lg-word">GRICOL<small>S.A.</small></div>
+        <p class="lg-sub">Sistema de inventario semanal: clasificación automática de ítems, control de cantidades estándar y excedentes, comparativo entre semanas y alertas de traslado, liberación y salida efectiva.</p>
+      </div>
+      <div class="lg-foot">FORM-07 · REV.05 — USO EXCLUSIVO DE PLANTA</div>
+    </div>
+    <div class="lg-panel">
+      <form class="lg-card" id="f-login">
+        <h2>Acceso al sistema</h2>
+        <div class="rule"></div>
+        <div class="field" style="margin-bottom:16px">
+          <label>Usuario</label>
+          <input class="input" id="lg-user" autocomplete="username" placeholder="usuario">
+        </div>
+        <div class="field">
+          <label>Contraseña</label>
+          <div class="pw-wrap">
+            <input class="input" id="lg-pass" type="password" autocomplete="current-password" placeholder="••••••••">
+            <button type="button" class="pw-eye" id="lg-eye" aria-label="Mostrar contraseña"><i data-lucide="eye"></i></button>
+          </div>
+        </div>
+        <div class="lg-err" id="lg-err">Usuario o contraseña incorrectos.</div>
+        <button class="btn primary" style="width:100%;justify-content:center;margin-top:22px" type="submit">
+          <i data-lucide="lock"></i> Ingresar
+        </button>
+        <div class="lg-hint">Acceso de demostración — usuario <b>admin</b> · contraseña <b>gricol2025</b></div>
+      </form>
+    </div>
+  </div>`;
+  icons();
+  $('#lg-eye').onclick=()=>{const p=$('#lg-pass');p.type=p.type==='password'?'text':'password';
+    $('#lg-eye').innerHTML=`<i data-lucide="${p.type==='password'?'eye':'eye-off'}"></i>`;icons();};
+  $('#f-login').onsubmit=e=>{
+    e.preventDefault();
+    const a=store.auth;
+    const u=$('#lg-user').value.trim().toLowerCase();
+    if(u===a.user && b64($('#lg-pass').value)===a.hash){
+      sessSet();
+      logEvent('sesión','Ingreso de '+a.user);
+      renderApp();
+    } else { $('#lg-err').classList.add('show'); }
+  };
+}
+
+// ================= SHELL APP =================
+const NAV=[
+  {id:'dashboard',n:'01',lbl:'Panel',ic:'layout-dashboard'},
+  {id:'enter',n:'02',lbl:'Ingresar',ic:'package-plus'},
+  {id:'inv',n:'03',lbl:'Inventario',ic:'list'},
+  {id:'cmp',n:'04',lbl:'Comparativo',ic:'git-compare'},
+  {id:'rep',n:'05',lbl:'Reportes',ic:'clipboard-list'},
+  {id:'set',n:'06',lbl:'Ajustes',ic:'settings'},
+];
+function renderApp(){
+  $('#root').innerHTML=`
+  <div class="app">
+    <aside class="sidebar no-print">
+      <div class="sb-logo">
+        <div class="sb-mark">G</div>
+        <div><div class="t1">GRICOL S.A.</div><div class="t2">INVENTARIO SEMANAL</div></div>
+      </div>
+      <nav class="sb-nav">${NAV.map(v=>`
+        <button class="nav-btn" data-v="${v.id}">
+          <span class="n">${v.n}</span><i data-lucide="${v.ic}"></i><span class="lbl">${v.lbl}</span>
+        </button>`).join('')}
+      </nav>
+      <div class="sb-user">
+        <div class="av">${esc(store.auth.user[0].toUpperCase())}</div>
+        <div class="info"><div class="un">${esc(store.auth.user)}</div><div class="rl">Bodega</div></div>
+        <button class="sb-exit" id="btn-exit" title="Cerrar sesión"><i data-lucide="log-out"></i></button>
+      </div>
+    </aside>
+    <main class="main"><div class="wrap" id="view"></div></main>
+  </div>`;
+  icons();
+  $$('.nav-btn').forEach(b=>b.onclick=()=>{state.view=b.dataset.v;renderView();});
+  $('#btn-exit').onclick=()=>{
+    openModal(`<div class="m-head"><i data-lucide="log-out"></i><h3>Cerrar sesión</h3>
+      <button class="btn icon" onclick="closeModal()"><i data-lucide="x"></i></button></div>
+      <div class="m-body">¿Deseas salir del sistema? Los datos permanecen guardados en este navegador.</div>
+      <div class="m-foot"><button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn red" id="m-exit"><i data-lucide="log-out"></i> Salir</button></div>`);
+    $('#m-exit').onclick=()=>{sessClear();closeModal();renderLogin();};
+  };
+  // Repetir fijas automáticamente + prompt semanal
+  repetirFijas(nowWK());
+  renderView();
+  setTimeout(()=>checkWeeklyPrompt(),400);
+}
+function setView(id){ state.view=id; renderView(); }
+function gotoRep(tab){ state.view='rep'; state.rep.tab=tab; renderView(); }
+function renderView(){
+  $$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.v===state.view));
+  const R={dashboard:vDashboard,enter:vEnter,inv:vInv,cmp:vCmp,rep:vRep,set:vSet};
+  R[state.view]();
+  window.scrollTo({top:0});
+}
+const secHead=(num,title,meta='')=>`
+  <header class="sec-head">
+    <span class="sec-num">${num}</span><h1>${title}</h1>
+    <div class="sec-rule"></div><span class="sec-meta">${meta}</span>
+  </header>`;
+const tagFor=c=>{
+  let cls=c.kind;
+  if(c.esExcedente||c.kind==='release'&&c.excedente) cls='excess';
+  const stripes=(c.kind==='release'&&!c.esExcedente)?'<span class="stripes"></span>':'';
+  return `<span class="tag t-${cls}">${stripes}${c.label}</span>`;
+};
+const modeBar=(m)=>`
+  <div class="modebar no-print">
+    <button data-m="manual" class="${m==='manual'?'on':''}"><i data-lucide="keyboard"></i> Uno por uno (manual)</button>
+    <button data-m="import" class="${m==='import'?'on':''}"><i data-lucide="file-spreadsheet"></i> Varios a la vez (Excel)</button>
+  </div>`;
+function bindModeBar(){
+  $$('.modebar button').forEach(b=>b.onclick=()=>{state.enter.mode=b.dataset.m;vEnter();});
+}
+</script>
+<script>
+// ================= 01 · PANEL =================
+function vDashboard(){
+  const W0=nowWK(), cmp=compareWeeks(W0), agg=aggByRef(W0);
+  const entries=[...agg.values()];
+  const counts={fixed:0,import:0,assay:0,move:0,release:0,excess:0};
+  for(const e of entries){
+    const c=classify(e.ref,e.tipo,W0,e.qty);
+    counts[c.kind]=(counts[c.kind]||0)+1;
+    if(c.excedente>0) counts.excess++;
+  }
+  const relFirst=e=>{const c=classify(e.ref,e.tipo,W0,e.qty);return (c.kind==='release'||c.excedente>0)?0:1;};
+  const alerts=entries.filter(e=>{const c=classify(e.ref,e.tipo,W0,e.qty);return ['move','release'].includes(c.kind)||c.excedente>0;})
+    .sort((a,b)=>relFirst(a)-relFirst(b));
+  const delta=cmp.qB-cmp.qA;
+  const totalRefs=entries.length;
+  const byLoc={}; for(const e of entries) byLoc[e.loc]=(byLoc[e.loc]||0)+1;
+  const locs=Object.entries(byLoc).sort((a,b)=>b[1]-a[1]);
+  const maxC=Math.max(1,counts.fixed,counts.import,counts.assay,counts.move,counts.release,counts.excess);
+  const recent=[...store.items].sort((a,b)=>b.ts-a.ts).slice(0,4);
+
+  if(store.items.length===0){
+    $('#view').innerHTML=secHead('01','Panel de control',weekKeyOf(Date.now()))+`
+      <div class="blank"><i data-lucide="inbox"></i>
+        <div class="big">Inventario vacío</div>
+        <p>Aún no hay ítems registrados. Comienza ingresando el inventario de la semana — uno por uno o importando desde Excel.</p>
+        <button class="btn primary" onclick="setView('enter')"><i data-lucide="package-plus"></i> Ingresar ítems</button>
+      </div>`;
+    icons(); return;
+  }
+
+  $('#view').innerHTML=secHead('01','Panel de control',fmtW(W0)+' — en curso')+`
+  <div class="band no-print">
+    <div class="kpi hero"><div class="v num">${cmp.qB}</div><div class="l">Unidades en la semana</div><small>REFS ACTIVAS: ${totalRefs}</small></div>
+    <div class="kpi"><div class="v num">${counts.fixed+counts.import+counts.assay}</div><div class="l">Clasificados automáticamente</div></div>
+    <div class="kpi"><div class="v num alert">${counts.move+counts.release}</div><div class="l">Por trasladar / liberar</div></div>
+    <div class="kpi"><div class="v num amber">${counts.excess}</div><div class="l">Con excedente</div></div>
+    <div class="kpi"><div class="v num ${cmp.out.length?'alert':''}">${cmp.out.length}</div><div class="l">Salidas efectivas</div></div>
+    <div class="kpi"><div class="v num ${delta<0?'alert':''}">${delta>=0?'+':''}${delta}</div><div class="l">Balance vs S${parseWK(cmp.prev).week}</div></div>
+  </div>
+
+  <div class="cols">
+    <div class="panel">
+      <div class="panel-head"><span class="idx">A</span><h3>Alertas de la semana</h3><div class="spacer"></div>
+        <button class="linkish no-print" onclick="gotoRep('alertas')">Ver todas en reportes</button></div>
+      <div class="panel-body" style="padding:8px 16px">
+        ${alerts.length||cmp.out.length ? `<ul class="alist">
+          ${cmp.out.map((e,i)=>`<li><span class="ix">${String(i+1).padStart(2,'0')}</span>
+            <div class="body"><div class="r1"><span class="ref">${esc(e.ref)}</span><span class="tag t-out">Salida efectiva del inventario</span><span class="mono" style="font-size:11px;color:var(--mut)">${e.qty} und · ${esc(e.loc)}</span></div>
+            <div class="why">Estaba en la semana ${parseWK(cmp.prev).week} y no aparece en la actual. ${esc(e.desc)}</div></div></li>`).join('')}
+          ${alerts.map((e,i)=>{const c=classify(e.ref,e.tipo,W0,e.qty);const j=cmp.out.length+i+1;return`
+            <li><span class="ix">${String(j).padStart(2,'0')}</span>
+            <div class="body"><div class="r1"><span class="ref">${esc(e.ref)}</span>${tagFor(c)}${c.excedente>0?`<span class="tag t-excess">Excedente ${c.excedente} und → Liberar</span>`:''}<span class="mono" style="font-size:11px;color:var(--mut)">${e.qty} und · ${esc(e.loc)}</span></div>
+            <div class="why">${esc(c.reason)}</div></div></li>`}).join('')}
+        </ul>` : `<div class="empty"><i data-lucide="check"></i><p>Sin alertas: todos los ítems de la semana están clasificados.</p></div>`}
+      </div>
+    </div>
+    <div>
+      <div class="panel">
+        <div class="panel-head"><span class="idx">B</span><h3>Clasificación</h3></div>
+        <div class="panel-body">
+          ${[['Inventario fijo',counts.fixed,''],['Importación',counts.import,'f-import'],['Ensayo',counts.assay,'f-assay'],
+             ['Trasladar',counts.move,'f-move'],['Liberar',counts.release,'f-release'],['Con excedente',counts.excess,'f-excess']].map(([l,v,f])=>`
+            <div class="hbar"><span class="bl">${l}</span>
+              <span class="track"><span class="fill ${f}" style="width:${Math.round(v/maxC*100)}%"></span></span>
+              <span class="bn num">${v}</span></div>`).join('')}
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><span class="idx">C</span><h3>Ubicaciones</h3></div>
+        <div class="panel-body">
+          ${locs.map(([l,v])=>`<div class="hbar" style="grid-template-columns:130px 1fr 34px">
+            <span class="bl">${esc(l)}</span>
+            <span class="track"><span class="fill" style="width:${Math.round(v/Math.max(...locs.map(x=>x[1]))*100)}%;background:var(--r-600)"></span></span>
+            <span class="bn num">${v}</span></div>`).join('')}
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><span class="idx">D</span><h3>Últimos movimientos</h3></div>
+        <div class="panel-body" style="padding:8px 16px">
+          ${recent.map(it=>`<div class="logline"><span class="lt">${fmtTs(it.ts)}</span>
+            <span class="lk ${it.week===W0?'a-ingreso':''}" style="${it.week!==W0?'opacity:.55':''}">${it.week===W0?'ingreso':'semana ant.'}</span>
+            <span class="lm mono" style="font-size:12px">${esc(it.ref)} <span style="color:var(--mut);font-family:var(--fu);font-weight:400">· ${esc(it.desc)}</span></span></div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+  icons();
+}
+
+// ================= 02 · INGRESAR =================
+function vEnter(){
+  if(state.enter.mode==='import') vImport(); else vManual();
+}
+
+// ---------- 02A · Ingreso manual ----------
+function vManual(){
+  const e=state.enter;
+  const weekOpts=[...new Set([nowWK(),prevWK(nowWK()),...store.items.map(i=>i.week)])]
+    .sort((a,b)=>b.localeCompare(a));
+  $('#view').innerHTML=secHead('02','Ingreso de ítem',fmtW(e.week))+modeBar('manual')+`
+  <div class="fgrid">
+    <form class="fcard" id="f-item" novalidate>
+      <div class="frows">
+        <div class="field full">
+          <label>Referencia <b>*</b></label>
+          <input class="input mono" id="i-ref" style="text-transform:uppercase" placeholder="Ej. IMP-0450 · ENS-0088 · FIJ-1201 · REF-3301" value="${esc(e.ref)}" autocomplete="off">
+          <span class="ferr" id="e-ref">La referencia es obligatoria.</span>
+        </div>
+        <div class="field full">
+          <label>Descripción</label>
+          <input class="input" id="i-desc" placeholder="Nombre o descripción del artículo" value="${esc(e.desc)}">
+        </div>
+        <div class="field">
+          <label>Cantidad <b>*</b></label>
+          <input class="input num" id="i-qty" type="number" min="0" step="1" inputmode="numeric" placeholder="0" value="${esc(e.qty)}">
+          <span class="ferr" id="e-qty">Ingresa una cantidad mayor o igual a 0.</span>
+        </div>
+        <div class="field">
+          <label>Tipo de artículo</label>
+          <select class="input" id="i-tipo">${TIPOS.map(t=>`<option ${t===e.tipo?'selected':''}>${t}</option>`).join('')}</select>
+        </div>
+        <div class="field">
+          <label>Ubicación <b>*</b></label>
+          <select class="input" id="i-loc">${store.locs.map(l=>`<option ${l===e.loc?'selected':''}>${esc(l)}</option>`).join('')}</select>
+        </div>
+        <div class="field">
+          <label>Semana</label>
+          <select class="input" id="i-week">${weekOpts.map(w=>`<option value="${w}" ${w===e.week?'selected':''}>${w}${w===nowWK()?' — actual':''}</option>`).join('')}</select>
+        </div>
+        <div class="field full">
+          <label>Observaciones</label>
+          <textarea class="input" id="i-obs" placeholder="Notas del ítem (opcional)">${esc(e.obs)}</textarea>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
+        <button class="btn primary" type="submit"><i data-lucide="stamp"></i> Registrar en la semana</button>
+        <button class="btn" type="button" id="i-clear"><i data-lucide="rotate-ccw"></i> Limpiar</button>
+      </div>
+    </form>
+
+    <aside class="verdict no-print">
+      <div class="vd-head">CLASIFICACIÓN AUTOMÁTICA — TIEMPO REAL</div>
+      <div class="vd-stage" id="vd-stage"></div>
+      <div class="vd-excess" id="vd-excess"></div>
+      <div class="vd-dup" id="vd-dup"></div>
+      <ul class="rules" id="vd-rules"></ul>
+    </aside>
+  </div>`;
+  icons(); bindModeBar();
+  const refresh=()=>updateVerdict(false);
+  ['i-ref','i-desc','i-qty','i-obs'].forEach(id=>$('#'+id).addEventListener('input',()=>{
+    state.enter[id.slice(2)]=$('#'+id).value; refresh();}));
+  ['i-tipo','i-loc','i-week'].forEach(id=>$('#'+id).addEventListener('change',()=>{
+    state.enter[id.slice(2)]=$('#'+id).value; refresh();}));
+  $('#i-clear').onclick=()=>{Object.assign(state.enter,{ref:'',desc:'',qty:'',obs:''});
+    vManual(); toast('Formulario limpio.','ok','rotate-ccw');};
+  $('#f-item').onsubmit=ev=>{
+    ev.preventDefault();
+    const ref=state.enter.ref.trim().toUpperCase();
+    const qty=Number(state.enter.qty);
+    let ok=true;
+    $('#e-ref').classList.toggle('show',!ref); if(!ref)ok=false;
+    $('#e-qty').classList.toggle('show',state.enter.qty===''||isNaN(qty)||qty<0); if(isNaN(qty)||qty<0||state.enter.qty==='')ok=false;
+    if(!ok) return;
+    const wk=state.enter.week;
+    const c=classify(ref,state.enter.tipo,wk,qty);
+    // Detectar excedente ANTES de guardar
+    let excedenteCreado=0;
+    let qtyBase=qty;
+    if(c.excedente>0){
+      qtyBase=c.cantidadBase;
+      excedenteCreado=c.excedente;
+    }
+    const dup=store.items.find(i=>i.week===wk && i.ref===ref);
+    if(dup){
+      dup.qty+=qtyBase;
+      if(state.enter.desc) dup.desc=state.enter.desc;
+      if(state.enter.obs) dup.obs=dup.obs?dup.obs+' · '+state.enter.obs:state.enter.obs;
+      dup.ts=Date.now(); dup.loc=state.enter.loc; dup.tipo=state.enter.tipo;
+      store.items=[...store.items];
+      logEvent('ingreso',`${ref} · suma de ${qtyBase} und (total ${dup.qty}) en ${state.enter.loc} — ${wk}`);
+      toast(`La referencia ya existía en ${wk}: se sumaron ${qtyBase} und (total ${dup.qty}).`,'warn','git-merge');
+    } else {
+      store.items=[...store.items,{id:uid(),ref,desc:state.enter.desc.trim()||'—',qty:qtyBase,
+        tipo:state.enter.tipo,loc:state.enter.loc,week:wk,obs:state.enter.obs.trim(),ts:Date.now()}];
+      logEvent('ingreso',`${ref} · ${state.enter.desc.trim()||'sin descripción'} — ${qtyBase} und en ${state.enter.loc} — ${wk}`);
+      toast(`Ítem registrado en ${wk}. Clasificado: ${c.label}.`,'ok','stamp');
+    }
+    // Crear ítem de excedente
+    if(excedenteCreado>0){
+      const refExc=ref+'-EXC';
+      const yaExc=store.items.find(i=>i.week===wk && i.ref===refExc);
+      if(yaExc){ yaExc.qty+=excedenteCreado; yaExc.ts=Date.now(); }
+      else {
+        store.items=[...store.items,{id:uid(),ref:refExc,desc:(state.enter.desc||c.label)+' (excedente)',qty:excedenteCreado,
+          tipo:state.enter.tipo,loc:state.enter.loc,week:wk,obs:`Excedente de ${ref} · cantidad base ${c.cantidadBase} und`,ts:Date.now()}];
+      }
+      logEvent('excedente',`${ref} · ${excedenteCreado} und excedentes creados como ${refExc} → LIBERAR`);
+      toast(`Excedente detectado: ${excedenteCreado} und marcados como LIBERAR.`,'warn','alert-triangle');
+    }
+    Object.assign(state.enter,{ref:'',desc:'',qty:'',obs:''});
+    vManual();
+  };
+  updateVerdict(true);
+}
+let lastStamp='';
+function updateVerdict(first){
+  const e=state.enter, stage=$('#vd-stage'); if(!stage) return;
+  const wk=e.week;
+  const qty=Number(e.qty);
+  const dup=e.ref.trim()? store.items.find(i=>i.week===wk && i.ref===e.ref.trim().toUpperCase()):null;
+  const dd=$('#vd-dup');
+  if(dup){dd.classList.add('show');
+    dd.innerHTML=`Ya registrada en ${wk}: <b>${dup.qty} und</b> · ${esc(dup.loc)}. Al guardar se sumará la cantidad.`;
+  } else dd.classList.remove('show');
+
+  const ex=$('#vd-excess');
+  if(ex){
+    if(e.ref.trim() && !isNaN(qty) && qty>0){
+      const c=classify(e.ref.trim(),e.tipo,wk,qty);
+      if(c.excedente>0){
+        ex.classList.add('show');
+        ex.innerHTML=`⚠️ Excedente: <b>${c.excedente} und</b> sobre la cantidad base (${c.cantidadBase}). Se crearán como <b>${e.ref.trim().toUpperCase()}-EXC</b> → LIBERAR.`;
+      } else if(c.faltante>0){
+        ex.classList.add('show');
+        ex.innerHTML=`ℹ️ Faltan <b>${c.faltante} und</b> respecto a la cantidad base (${c.cantidadBase}).`;
+      } else {
+        ex.classList.remove('show');
+      }
+    } else ex.classList.remove('show');
+  }
+
+  if(!e.ref.trim() && !first){
+    stage.innerHTML=`<div class="vd-idle">Escribe la referencia del ítem.<br>El sistema la clasificará al instante.</div>`;
+  } else if(!e.ref.trim()){
+    stage.innerHTML=`<div class="vd-idle">En espera de la referencia…</div>`;
+  } else {
+    const c=classify(e.ref.trim(),e.tipo,wk,isNaN(qty)?null:qty);
+    let cls=c.kind;
+    if(c.esExcedente||c.excedente>0) cls='excess';
+    stage.innerHTML=`<span class="stamp big c-${cls}" id="vd-stamp">${c.label}</span>
+      <div class="vd-reason">${esc(c.reason)}</div>`;
+    if(lastStamp!==c.label){const s=$('#vd-stamp');s.classList.add('animate');
+      setTimeout(()=>s.classList.remove('animate'),350);}
+    lastStamp=c.label;
+  }
+  const c2=e.ref.trim()? classify(e.ref.trim(),e.tipo,wk,isNaN(qty)?null:qty):null;
+  $('#vd-rules').innerHTML=RULES_TXT.map((t,i)=>{
+    const hit=c2 && c2.rule===i+1;
+    const txt=i===3? t.replace('el umbral',`el umbral (${store.cfg.threshold} sem.)`) : t;
+    return `<li class="${hit?'hit':''}"><span class="rn">R${i+1}</span><span class="rt">${esc(txt)}</span></li>`;
+  }).join('');
+}
+
+// ---------- 02B · Importación masiva ----------
+function parseImpText(text){
+  const clean=String(text||'').replace(/^\ufeff/,'').replace(/\r\n?/g,'\n');
+  const lines=clean.split('\n').map(l=>l.trim()).filter(l=>l!=='');
+  if(!lines.length) return [];
+  const delim = lines[0].includes('\t') ? '\t' : (lines[0].includes(';') ? ';' : ',');
+  let cells=lines.map(l=>l.split(delim).map(c=>c.trim()));
+  const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+  const H={
+    ref:['referencia','referencias','ref','codigo','cod'],
+    desc:['descripcion','desc','articulo','nombre','producto','detalle'],
+    qty:['cantidad','cantidades','cant','qty','unidades','und','existencia','existencias'],
+    tipo:['tipo','clase','categoria'],
+    loc:['ubicacion','zona','bodega','loc','ubicacionactual'],
+    week:['semana','semanas','week'],
+    obs:['observaciones','observacion','notas','nota','comentarios','comentario']
+  };
+  let map={ref:0,desc:1,qty:2,tipo:3,loc:4,week:5,obs:6}, hasHead=false;
+  const head=cells[0].map(norm);
+  if(head.some(h=>H.ref.includes(h)||H.qty.includes(h)||H.desc.includes(h))){
+    hasHead=true; map={};
+    head.forEach((h,i)=>{for(const k in H) if(H[k].includes(h)){map[k]=i;break;}});
+    cells=cells.slice(1);
+  }
+  const imp=state.enter.imp;
+  return cells.map((c,i)=>{
+    const g=k=>map[k]!=null?(c[map[k]]||''):'';
+    const line=i+(hasHead?2:1);
+    const ref=(g('ref')||'').toUpperCase();
+    const desc=g('desc'), tipo=g('tipo'), loc=g('loc'), obs=g('obs');
+    const qtyRaw=g('qty'), weekRaw=g('week');
+    const qty=parseInt(String(qtyRaw).replace(/[^\d-]/g,''),10);
+    let week=imp.week, error='';
+    if(!ref) error='Falta la referencia.';
+    if(!error && (qtyRaw===''||isNaN(qty)||qty<0))
+      error=qtyRaw===''?'Falta la cantidad.':`Cantidad no válida: "${qtyRaw}".`;
+    if(!error && weekRaw){
+      const w=String(weekRaw).toUpperCase().replace(/\s/g,'');
+      let m=w.match(/^(\d{4})-?S(\d{1,2})$/);
+      if(m) week=m[1]+'-S'+String(+m[2]).padStart(2,'0');
+      else{
+        m=w.match(/^S?(\d{1,2})$/);
+        if(m) week=String(new Date().getFullYear())+'-S'+String(+m[1]).padStart(2,'0');
+        else error=`Semana no reconocida: "${weekRaw}" (usa 2026-S07, S07 o 7).`;
+      }
+    }
+    return {line,ref,desc,tipo:tipo||'Otro',loc,obs,qtyRaw,qty:(!isNaN(qty)&&qty>=0)?qty:null,week,error,
+      exists:ref? !!store.items.find(x=>x.week===week && x.ref===ref):false};
+  });
+}
+
+function vImport(){
+  const im=state.enter.imp;
+  const weekOpts=[...new Set([nowWK(),prevWK(nowWK()),...store.items.map(i=>i.week)])].sort((a,b)=>b.localeCompare(a));
+  $('#view').innerHTML=secHead('02','Importar desde Excel','CARGA MASIVA DE REFERENCIAS')+modeBar('import')+`
+  <div class="imp-grid">
+    <div class="panel">
+      <div class="panel-head"><span class="idx">1</span><h3>Pega los datos o carga el archivo</h3></div>
+      <div class="panel-body">
+        <textarea id="imp-text" class="pastebox"
+          placeholder="En Excel: selecciona las celdas → Ctrl+C → pega aquí con Ctrl+V&#10;&#10;Ejemplo:&#10;Referencia&#9;Descripción&#9;Cantidad&#9;Tipo&#9;Ubicación&#9;Semana&#9;Observaciones&#10;IMP-0600&#9;Válvula de bola 1/2&quot;&#9;24&#9;Repuesto&#9;Zona de Muestras&#10;REF-9001&#9;Caja cartón 40×30&#9;150&#9;Empaque&#9;Andén 1"></textarea>
+        <div class="orline">O BIEN</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <button class="btn small" id="imp-file-btn"><i data-lucide="file-up"></i> Cargar archivo CSV</button>
+          <input type="file" id="imp-file" accept=".csv,.txt" hidden>
+          <button class="btn small" id="imp-tpl"><i data-lucide="file-down"></i> Descargar plantilla</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span class="idx">2</span><h3>Opciones e instrucciones</h3></div>
+      <div class="panel-body">
+        <div class="frows" style="margin-bottom:14px">
+          <div class="field"><label>Semana para filas sin semana</label>
+            <select class="input" id="imp-week">${weekOpts.map(w=>`<option value="${w}" ${w===im.week?'selected':''}>${w}${w===nowWK()?' — actual':''}</option>`).join('')}</select></div>
+          <div class="field"><label>Ubicación para filas sin ubicación</label>
+            <select class="input" id="imp-loc">${store.locs.map(l=>`<option ${l===im.loc?'selected':''}>${esc(l)}</option>`).join('')}</select></div>
+          <div class="field full"><label>Si la referencia ya existe en esa semana</label>
+            <select class="input" id="imp-dup">
+              <option value="sum" ${im.sumDup?'selected':''}>Sumar las cantidades</option>
+              <option value="skip" ${!im.sumDup?'selected':''}>Omitir esa fila</option>
+            </select></div>
+        </div>
+        <ol class="steps">
+          <li>En Excel ordena las columnas: <b>Referencia · Descripción · Cantidad · Tipo · Ubicación · Semana · Observaciones</b>. Solo Referencia y Cantidad son obligatorias.</li>
+          <li>Selecciona las celdas (con o sin fila de títulos) y cópialas con <b>Ctrl+C</b>.</li>
+          <li>Pega en el cuadro de la izquierda. También puedes guardar el Excel como <b>"CSV UTF-8"</b> y cargarlo con el botón.</li>
+          <li>Revisa la vista previa de abajo — la clasificación automática ya aparece por fila — y pulsa <b>Importar</b>.</li>
+        </ol>
+        <p style="font-size:12px;color:var(--mut);margin-top:10px">Los excedentes se detectan automáticamente según el catálogo de cantidades estándar (Ajustes).</p>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><span class="idx">3</span><h3>Vista previa</h3><div class="spacer"></div>
+      <span class="sec-meta" id="imp-count"></span>
+      <button class="btn small primary no-print" id="imp-go" disabled><i data-lucide="stamp"></i> Importar</button></div>
+    <div class="tscroll"><table>
+      <thead><tr><th>Línea</th><th>Ref.</th><th>Descripción</th><th class="r">Cant.</th><th>Tipo</th><th>Ubicación</th><th>Semana</th><th>Clasificación</th><th>Estado</th></tr></thead>
+      <tbody id="imp-tbody"></tbody>
+    </table></div>
+  </div>`;
+  icons(); bindModeBar();
+
+  const paintPreview=()=>{
+    const rows=parseImpText($('#imp-text').value);
+    const ok=rows.filter(r=>!r.error);
+    const bad=rows.length-ok.length;
+    $('#imp-count').textContent=`${ok.length} LISTA${ok.length===1?'':'S'} · ${bad} CON ERROR${bad===1?'':'ES'}`;
+    $('#imp-go').disabled=!ok.length;
+    $('#imp-tbody').innerHTML=rows.length? rows.map(r=>{
+      const c=r.error?null:classify(r.ref,r.tipo,r.week,r.qty);
+      const hasExc=c && c.excedente>0;
+      return `<tr class="${r.error?'imp-bad':''}">
+        <td class="mono" style="font-size:11px;color:var(--mut)">${r.line}</td>
+        <td class="mono">${esc(r.ref)||'—'}</td>
+        <td style="font-size:12.5px">${esc(r.desc)||'—'}</td>
+        <td class="r mono num">${esc(r.qtyRaw)||'—'}</td>
+        <td style="font-size:12.5px">${esc(r.tipo)}</td>
+        <td style="font-size:12.5px">${esc(r.loc)||'<span style="color:var(--mut)">'+esc(im.loc)+' (defecto)</span>'}</td>
+        <td class="mono" style="font-size:12px">${esc(r.week)}</td>
+        <td>${c?tagFor(c):'<span style="color:var(--mut)">—</span>'}</td>
+        <td>${r.error?`<span class="state-bad">${esc(r.error)}</span>`:`<span class="${hasExc?'state-warn':'state-ok'}">${hasExc?`Excedente ${c.excedente} und → Liberar`:'Lista'}</span>${r.exists?'<span class="sub">ya existe: se '+(im.sumDup?'sumará':'omitirá')+'</span>':''}`}</td>
+      </tr>`;
+    }).join('') : `<tr><td colspan="9"><div class="empty"><i data-lucide="clipboard"></i><p>Pega tus datos o carga el archivo para ver la vista previa.</p></div></td></tr>`;
+    icons();
+  };
+
+  $('#imp-text').addEventListener('input',paintPreview);
+  $('#imp-week').onchange=e=>{im.week=e.target.value;paintPreview();};
+  $('#imp-loc').onchange=e=>{im.loc=e.target.value;};
+  $('#imp-dup').onchange=e=>{im.sumDup=e.target.value==='sum';paintPreview();};
+  $('#imp-file-btn').onclick=()=>$('#imp-file').click();
+  $('#imp-file').onchange=e=>{
+    const f=e.target.files[0]; if(!f)return;
+    const rd=new FileReader();
+    rd.onload=()=>{ $('#imp-text').value=String(rd.result||''); paintPreview();
+      toast('Archivo cargado. Revisa la vista previa.','ok','file-up'); };
+    rd.readAsText(f,'UTF-8');
+    e.target.value='';
+  };
+  $('#imp-tpl').onclick=()=>{
+    dlCSV('gricol_plantilla_importar.csv',[
+      ['Referencia','Descripción','Cantidad','Tipo','Ubicación','Semana','Observaciones'],
+      ['IMP-0600','Válvula de bola 1/2"',24,'Repuesto','Zona de Muestras','','Muestra proveedor'],
+      ['REF-9001','Caja cartón 40×30×20',150,'Empaque','Andén 1','',''],
+      ['ENS-0110','Manguera p/ banco de ensayos',6,'Muestra','Oficina Técnica','','']
+    ]);
+    toast('Plantilla descargada. Ábrela con Excel.','ok','file-down');
+  };
+  $('#imp-go').onclick=()=>{
+    const rows=parseImpText($('#imp-text').value);
+    const ok=rows.filter(r=>!r.error);
+    if(!ok.length) return;
+    const bad=rows.length-ok.length;
+    const groups=new Map();
+    for(const r of ok){
+      const key=r.ref+'|'+r.week;
+      if(!groups.has(key)) groups.set(key,{ref:r.ref,desc:'',qty:0,tipo:r.tipo,loc:r.loc||im.loc,week:r.week,obs:'',n:0});
+      const g=groups.get(key); g.qty+=r.qty; g.n++;
+      if(r.desc && !g.desc) g.desc=r.desc;
+      if(r.obs) g.obs=g.obs?g.obs+' · '+r.obs:r.obs;
+    }
+    const items=store.items;
+    let added=0,addedQty=0,merged=0,mergedQty=0,skipped=0,excCreados=0,excQty=0;
+    const newLocs=[];
+    for(const g of groups.values()){
+      const c=classify(g.ref,g.tipo,g.week,g.qty);
+      let qtyBase=g.qty, excedente=0;
+      if(c.excedente>0){ qtyBase=c.cantidadBase; excedente=c.excedente; }
+      const dup=items.find(i=>i.week===g.week && i.ref===g.ref);
+      if(dup){
+        if(im.sumDup){ dup.qty+=qtyBase; dup.ts=Date.now(); if(g.desc)dup.desc=g.desc;
+          if(g.obs)dup.obs=dup.obs?dup.obs+' · '+g.obs:g.obs; merged++; mergedQty+=qtyBase; }
+        else skipped++;
+      } else {
+        if(g.loc && !store.locs.includes(g.loc)){ store.locs=[...store.locs,g.loc]; newLocs.push(g.loc); }
+        items.push({id:uid(),ref:g.ref,desc:g.desc||'—',qty:qtyBase,tipo:g.tipo,loc:g.loc,week:g.week,obs:g.obs,ts:Date.now()});
+        added++; addedQty+=qtyBase;
+      }
+      if(excedente>0){
+        const refExc=g.ref+'-EXC';
+        const yaExc=items.find(i=>i.week===g.week && i.ref===refExc);
+        if(yaExc){ yaExc.qty+=excedente; yaExc.ts=Date.now(); }
+        else items.push({id:uid(),ref:refExc,desc:(g.desc||c.label)+' (excedente)',qty:excedente,
+          tipo:g.tipo,loc:g.loc,week:g.week,obs:`Excedente de ${g.ref} · cantidad base ${c.cantidadBase} und`,ts:Date.now()});
+        excCreados++; excQty+=excedente;
+      }
+    }
+    store.items=items;
+    logEvent('importación',`Carga masiva: ${added} nuevas (${addedQty} und), ${merged} sumadas (${mergedQty} und), ${skipped} omitidas, ${excCreados} excedentes (${excQty} und)${bad?`, ${bad} con error`:''}`);
+    $('#imp-text').value=''; paintPreview();
+    openModal(`<div class="m-head"><i data-lucide="check-circle-2"></i><h3>Importación completada</h3>
+      <button class="btn icon" onclick="closeModal()"><i data-lucide="x"></i></button></div>
+      <div class="m-body"><ul class="alist">
+        <li><span class="ix">+${added}</span><div class="body"><div class="r1"><b class="ref">Referencias nuevas</b></div><div class="why">${addedQty} unidades agregadas.</div></div></li>
+        ${merged?`<li><span class="ix">Σ${merged}</span><div class="body"><div class="r1"><b class="ref">Ya existían — cantidades sumadas</b></div><div class="why">${mergedQty} unidades adicionadas.</div></div></li>`:''}
+        ${excCreados?`<li><span class="ix" style="color:var(--amber)">⚠${excCreados}</span><div class="body"><div class="r1"><b class="ref" style="color:var(--amber)">Excedentes detectados</b></div><div class="why">${excQty} und creadas como <b>-EXC</b> para LIBERAR.</div></div></li>`:''}
+        ${skipped?`<li><span class="ix">${skipped}</span><div class="body"><div class="r1"><b class="ref">Omitidas (ya existían)</b></div></div></li>`:''}
+        ${bad?`<li><span class="ix" style="color:var(--r-600)">${bad}</span><div class="body"><div class="r1"><b class="ref" style="color:var(--r-600)">Filas con error — no importadas</b></div><div class="why">Corrígelas en Excel y vuelve a pegar solo esas.</div></div></li>`:''}
+        ${newLocs.length?`<li><span class="ix">U</span><div class="body"><div class="r1"><b class="ref">Ubicaciones nuevas</b></div><div class="why">${esc(newLocs.join(' · '))}</div></div></li>`:''}
+      </ul></div>
+      <div class="m-foot"><button class="btn" onclick="closeModal()">Cerrar</button>
+      <button class="btn primary" id="m-goinv"><i data-lucide="list"></i> Ver inventario</button></div>`);
+    $('#m-goinv').onclick=()=>{closeModal();setView('inv');};
+  };
+  paintPreview();
+}
+
+// ================= 03 · INVENTARIO =================
+function vInv(){
+  const f=state.inv;
+  const weekOpts=[...new Set(store.items.map(i=>i.week))].sort((a,b)=>b.localeCompare(a));
+  const wk=f.week==='all'?null:f.week;
+  const wkLabel = wk?fmtW(wk):'Todas las semanas';
+  $('#view').innerHTML=secHead('03','Inventario',wkLabel)+`
+  <div class="filters no-print">
+    <div class="searchbox"><i data-lucide="search"></i>
+      <input class="input" id="fl-q" placeholder="Buscar referencia o descripción…" value="${esc(f.q)}"></div>
+    <select class="sel" id="fl-week">
+      <option value="all" ${f.week==='all'?'selected':''}>Todas las semanas</option>
+      ${weekOpts.map(w=>`<option value="${w}" ${f.week===w?'selected':''}>${w}${w===nowWK()?' — actual':''}</option>`).join('')}
+    </select>
+    <select class="sel" id="fl-loc">
+      <option value="all">Todas las ubicaciones</option>
+      ${store.locs.map(l=>`<option ${f.loc===l?'selected':''}>${esc(l)}</option>`).join('')}
+    </select>
+    <div class="chips" id="fl-chips"></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><span class="idx" id="inv-count"></span><div class="spacer"></div>
+      <button class="btn small no-print" id="inv-csv"><i data-lucide="download"></i> CSV vista</button></div>
+    <div class="tscroll"><table>
+      <thead><tr><th>Ref.</th><th>Descripción</th><th class="r">Cant.</th><th>Tipo</th><th>Clasificación</th><th>Ubicación</th><th>Semana</th><th></th></tr></thead>
+      <tbody id="inv-tbody"></tbody>
+    </table></div>
+  </div>`;
+  icons();
+  const CLS=[['all','Todos'],['fixed','Fijo'],['import','Importación'],['assay','Ensayo'],['move','Trasladar'],['release','Liberar'],['excess','Con excedente']];
+  const paintChips=()=>{
+    const base=store.items.filter(i=>!wk||i.week===wk).filter(i=>f.loc==='all'||i.loc===f.loc)
+      .filter(i=>!f.q||(i.ref+' '+i.desc).toUpperCase().includes(f.q.toUpperCase()));
+    $('#fl-chips').innerHTML=CLS.map(([k,l])=>{
+      let n;
+      if(k==='all') n=base.length;
+      else if(k==='excess') n=base.filter(i=>classify(i.ref,i.tipo,i.week,i.qty).excedente>0).length;
+      else n=base.filter(i=>classify(i.ref,i.tipo,i.week,i.qty).kind===k).length;
+      return `<button class="chip ${f.cls===k?'on':''}" data-c="${k}">${l}<span class="cn num">${n}</span></button>`;
+    }).join('');
+    $$('#fl-chips .chip').forEach(ch=>ch.onclick=()=>{f.cls=ch.dataset.c;paintChips();paintRows();});
+  };
+  const paintRows=()=>{
+    let rows=store.items.filter(i=>(!wk||i.week===wk)&&(f.loc==='all'||i.loc===f.loc));
+    if(f.cls==='excess') rows=rows.filter(i=>classify(i.ref,i.tipo,i.week,i.qty).excedente>0);
+    else if(f.cls!=='all') rows=rows.filter(i=>classify(i.ref,i.tipo,i.week,i.qty).kind===f.cls);
+    if(f.q){const q=f.q.toUpperCase(); rows=rows.filter(i=>(i.ref+' '+i.desc).toUpperCase().includes(q));}
+    rows.sort((a,b)=>a.ref.localeCompare(b.ref)||a.week.localeCompare(b.week));
+    $('#inv-count').textContent=`${rows.length} LÍNEA${rows.length===1?'':'S'} · ${rows.reduce((s,i)=>s+(Number(i.qty)||0),0)} UND`;
+    $('#inv-tbody').innerHTML=rows.length? rows.map(it=>{
+      const c=classify(it.ref,it.tipo,it.week,it.qty);
+      const excBadge=c.excedente>0?`<span class="tag t-excess" style="margin-left:6px">Excedente ${c.excedente} und → Liberar</span>`:'';
+      return `<tr>
+        <td class="mono">${esc(it.ref)}</td>
+        <td>${esc(it.desc)}${it.obs?`<span class="obs">${esc(it.obs)}</span>`:''}</td>
+        <td class="r mono num">${it.qty}</td>
+        <td style="font-size:12.5px">${esc(it.tipo)}</td>
+        <td>${tagFor(c)}${excBadge}<span class="sub">${esc(c.reason)}</span></td>
+        <td style="font-size:12.5px;white-space:nowrap">${esc(it.loc)}</td>
+        <td class="mono" style="font-size:12px">${it.week}</td>
+        <td><div class="rowacts no-print">
+          <button class="btn icon" title="Editar" data-ed="${it.id}"><i data-lucide="pencil"></i></button>
+          <button class="btn icon danger" title="Eliminar" data-del="${it.id}"><i data-lucide="trash-2"></i></button>
+        </div></td></tr>`;
+    }).join('') : `<tr><td colspan="8"><div class="empty"><i data-lucide="inbox"></i><p>Sin resultados con los filtros actuales.</p></div></td></tr>`;
+    icons();
+    $$('#inv-tbody [data-ed]').forEach(b=>b.onclick=()=>editModal(b.dataset.ed,()=>{paintChips();paintRows();}));
+    $$('#inv-tbody [data-del]').forEach(b=>b.onclick=()=>deleteModal(b.dataset.del,()=>{paintChips();paintRows();}));
+  };
+  $('#fl-q').addEventListener('input',e=>{f.q=e.target.value;paintChips();paintRows();});
+  $('#fl-week').onchange=e=>{f.week=e.target.value;vInv();};
+  $('#fl-loc').onchange=e=>{f.loc=e.target.value;paintChips();paintRows();};
+  $('#inv-csv').onclick=()=>{
+    const rows=store.items.filter(i=>(!wk||i.week===wk)&&(f.loc==='all'||i.loc===f.loc)).map(itemRow);
+    dlCSV(`gricol_inventario_${wk||'todo'}.csv`,[CSV_HEAD,...rows]);
+    toast('CSV descargado.','ok','download');
+  };
+  paintChips(); paintRows();
+}
+function editModal(id,after){
+  const it=store.items.find(i=>i.id===id); if(!it)return;
+  openModal(`<div class="m-head"><i data-lucide="pencil"></i><h3>Editar ítem — ${esc(it.ref)}</h3>
+    <button class="btn icon" onclick="closeModal()"><i data-lucide="x"></i></button></div>
+  <div class="m-body"><div class="frows">
+    <div class="field full"><label>Descripción</label><input class="input" id="m-desc" value="${esc(it.desc)}"></div>
+    <div class="field"><label>Cantidad</label><input class="input num" id="m-qty" type="number" min="0" value="${it.qty}"></div>
+    <div class="field"><label>Tipo</label><select class="input" id="m-tipo">${TIPOS.map(t=>`<option ${t===it.tipo?'selected':''}>${t}</option>`).join('')}</select></div>
+    <div class="field"><label>Ubicación</label><select class="input" id="m-loc">${store.locs.map(l=>`<option ${l===it.loc?'selected':''}>${esc(l)}</option>`).join('')}</select></div>
+    <div class="field"><label>Semana</label><select class="input" id="m-week">${[...new Set([it.week,nowWK(),...store.items.map(x=>x.week)])].sort((a,b)=>b.localeCompare(a)).map(w=>`<option ${w===it.week?'selected':''}>${w}</option>`).join('')}</select></div>
+    <div class="field full"><label>Observaciones</label><textarea class="input" id="m-obs">${esc(it.obs)}</textarea></div>
+  </div></div>
+  <div class="m-foot"><button class="btn" onclick="closeModal()">Cancelar</button>
+    <button class="btn primary" id="m-save"><i data-lucide="check"></i> Guardar cambios</button></div>`);
+  $('#m-save').onclick=()=>{
+    const qty=Number($('#m-qty').value);
+    if(isNaN(qty)||qty<0){toast('Cantidad inválida.','err');return;}
+    Object.assign(it,{desc:$('#m-desc').value.trim()||'—',qty,tipo:$('#m-tipo').value,
+      loc:$('#m-loc').value,week:$('#m-week').value,obs:$('#m-obs').value.trim(),ts:Date.now()});
+    store.items=[...store.items];
+    logEvent('edición',`${it.ref} · modificado (${it.qty} und · ${it.loc} · ${it.week})`);
+    closeModal(); toast('Cambios guardados.','ok','check'); after&&after();
+  };
+}
+function deleteModal(id,after){
+  const it=store.items.find(i=>i.id===id); if(!it)return;
+  openModal(`<div class="m-head"><i data-lucide="trash-2"></i><h3>Eliminar ítem</h3>
+    <button class="btn icon" onclick="closeModal()"><i data-lucide="x"></i></button></div>
+  <div class="m-body">¿Eliminar <b class="mono">${esc(it.ref)}</b> — ${esc(it.desc)} (${it.qty} und · ${esc(it.loc)} · ${it.week})?<br>
+  <span style="color:var(--mut);font-size:13px">Esta acción queda registrada en la bitácora y no se puede deshacer.</span></div>
+  <div class="m-foot"><button class="btn" onclick="closeModal()">Cancelar</button>
+    <button class="btn red" id="m-del"><i data-lucide="trash-2"></i> Eliminar</button></div>`);
+  $('#m-del').onclick=()=>{
+    store.items=store.items.filter(i=>i.id!==id);
+    logEvent('baja',`${it.ref} · eliminado (${it.qty} und · ${it.week})`);
+    closeModal(); toast('Ítem eliminado.','warn','trash-2'); after&&after();
+  };
+}
+
+// ================= 04 · COMPARATIVO =================
+function vCmp(){
+  const wk=state.cmp.week, cmp=compareWeeks(wk);
+  const weekOpts=[...new Set([nowWK(),...store.items.map(i=>i.week)])].sort((a,b)=>b.localeCompare(a));
+  const delta=cmp.qB-cmp.qA;
+  const outT = cmp.out.length? `<table>
+    <thead><tr><th>Ref.</th><th>Descripción</th><th class="r">Cant. final</th><th>Última ubicación</th><th>Estado</th></tr></thead>
+    <tbody>${outSorted(cmp.out).map(e=>`<tr>
+      <td class="mono">${esc(e.ref)}</td><td>${esc(e.desc)}</td><td class="r mono num">${e.qty}</td>
+      <td style="font-size:12.5px">${esc(e.loc)}</td>
+      <td><span class="stamp sm c-release">Salida efectiva del inventario</span></td></tr>`).join('')}</tbody></table>`
+    : `<div class="empty"><i data-lucide="check"></i><p>Todas las referencias de la semana ${parseWK(cmp.prev).week} continúan en la semana ${parseWK(wk).week}.</p></div>`;
+  const innT = cmp.inn.length? `<table>
+    <thead><tr><th>Ref.</th><th>Descripción</th><th class="r">Cant.</th><th>Ubicación</th><th>Clasificación</th></tr></thead>
+    <tbody>${outSorted(cmp.inn).map(e=>{const c=classify(e.ref,e.tipo,wk,e.qty);return`<tr>
+      <td class="mono">${esc(e.ref)}</td><td>${esc(e.desc)}</td><td class="r mono num">${e.qty}</td>
+      <td style="font-size:12.5px">${esc(e.loc)}</td><td>${tagFor(c)}</td></tr>`}).join('')}</tbody></table>`
+    : `<div class="empty"><i data-lucide="inbox"></i><p>Sin referencias nuevas frente a la semana anterior.</p></div>`;
+  const chgT = cmp.chg.length? `<table>
+    <thead><tr><th>Ref.</th><th>Cantidad</th><th>Ubicación</th></tr></thead>
+    <tbody>${outSorted(cmp.chg).map(x=>`<tr>
+      <td class="mono">${esc(x.ref)}<span class="sub">${esc(x.to.desc)}</span></td>
+      <td class="mono num" style="font-size:12.5px">${x.from.qty} → <b>${x.to.qty}</b>
+        ${x.from.qty!==x.to.qty?`<span class="delta ${x.to.qty>x.from.qty?'up':'down'}" style="margin-left:6px">${x.to.qty>x.from.qty?'+':''}${x.to.qty-x.from.qty}</span>`:''}</td>
+      <td class="mono" style="font-size:12.5px">${esc(x.from.loc)} → <b>${esc(x.to.loc)}</b></td></tr>`).join('')}</tbody></table>`
+    : `<div class="empty"><i data-lucide="minus"></i><p>Sin cambios en referencias continuas.</p></div>`;
+
+  $('#view').innerHTML=secHead('04','Comparativo semanal','VS SEMANA ANTERIOR')+`
+  <div class="cmp-head no-print">
+    <span style="font-family:var(--fd);font-size:11px;font-weight:600;letter-spacing:.14em;color:var(--mut)">SEMANA A COMPARAR</span>
+    <select class="sel" id="cmp-week">${weekOpts.map(w=>`<option value="${w}" ${w===wk?'selected':''}>${w}${w===nowWK()?' — actual':''}</option>`).join('')}</select>
+    <div class="cmp-arrow"><span class="wk">${wk}</span><i data-lucide="arrow-right"></i><span class="wk" style="background:#fff">${cmp.prev}</span></div>
+    <span class="delta ${delta<0?'down':'up'}">${delta>=0?'+':''}${delta} UND</span>
+  </div>
+  ${cmp.hasPrev?'':`<div class="warnline"><i data-lucide="alert-triangle" style="width:14px;height:14px;vertical-align:-2px"></i> No hay datos de la semana anterior (${cmp.prev}). El comparativo solo refleja la semana seleccionada.</div>`}
+  <div class="band no-print">
+    <div class="kpi"><div class="v num">${cmp.qA}</div><div class="l">Und. semana ${parseWK(cmp.prev).week}</div></div>
+    <div class="kpi"><div class="v num">${cmp.qB}</div><div class="l">Und. semana ${parseWK(wk).week}</div></div>
+    <div class="kpi"><div class="v num ${cmp.out.length?'alert':''}">${cmp.out.length}</div><div class="l">Salidas efectivas</div></div>
+    <div class="kpi"><div class="v num">${cmp.inn.length}</div><div class="l">Ingresos nuevos</div></div>
+    <div class="kpi"><div class="v num">${cmp.chg.length}</div><div class="l">Referencias con cambios</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><span class="idx">A</span><h3>Salidas — referencias que ya no aparecen</h3>
+      ${cmp.out.length?`<span class="stamp sm c-release">Salida efectiva del inventario</span>`:''}</div>
+    <div class="tscroll">${outT}</div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><span class="idx">B</span><h3>Ingresos nuevos de la semana</h3></div>
+    <div class="tscroll">${innT}</div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><span class="idx">C</span><h3>Cambios en referencias continuas</h3></div>
+    <div class="tscroll">${chgT}</div>
+  </div>`;
+  icons();
+  $('#cmp-week').onchange=e=>{state.cmp.week=e.target.value;vCmp();};
+}
+
+// ================= 05 · REPORTES =================
+function vRep(){
+  const r=state.rep, wk=r.week;
+  const weekOpts=[...new Set(store.items.map(i=>i.week))].sort((a,b)=>b.localeCompare(a));
+  const tabs=[['tipo','Por tipo'],['ubicacion','Por ubicación'],['alertas','Alertas de acción'],['excedentes','Excedentes'],['salidas','Salidas entre semanas'],['bitacora','Bitácora']];
+  let body='';
+  const groupTable=(key)=>{
+    const map=new Map();
+    for(const it of itemsOfWeek(wk)){
+      const k=it[key]; if(!map.has(k))map.set(k,{refs:new Set(),qty:0});
+      const e=map.get(k); e.refs.add(it.ref); e.qty+=Number(it.qty)||0;
+    }
+    const entries=[...map.entries()].sort((a,b)=>b[1].qty-a[1].qty);
+    if(!entries.length) return `<div class="empty"><i data-lucide="inbox"></i><p>Sin datos en la semana ${wk}.</p></div>`;
+    return entries.map(([k,e])=>`
+      <div class="grp-head"><h4>${esc(k)}</h4><div class="gl"></div><span class="gc num">${e.refs.size} ref · ${e.qty} und</span></div>
+      <div class="tscroll"><table>
+        <thead><tr><th>Ref.</th><th>Descripción</th><th class="r">Cant.</th><th>Clasificación</th><th>${key==='loc'?'Tipo':'Ubicación'}</th></tr></thead>
+        <tbody>${itemsOfWeek(wk).filter(i=>i[key]===k).sort((a,b)=>a.ref.localeCompare(b.ref)).map(it=>{
+          const c=classify(it.ref,it.tipo,wk,it.qty);
+          return `<tr><td class="mono">${esc(it.ref)}</td><td>${esc(it.desc)}</td><td class="r mono num">${it.qty}</td>
+            <td>${tagFor(c)}</td><td style="font-size:12.5px">${esc(key==='loc'?it.tipo:it.loc)}</td></tr>`}).join('')}</tbody>
+      </table></div>`).join('');
+  };
+  if(r.tab==='tipo') body=groupTable('tipo');
+  else if(r.tab==='ubicacion') body=groupTable('loc');
+  else if(r.tab==='alertas'){
+    const rows=itemsOfWeek(wk).map(it=>({it,c:classify(it.ref,it.tipo,wk,it.qty)})).filter(x=>x.c.kind==='move'||x.c.kind==='release');
+    body=rows.length? `<div class="tscroll"><table>
+      <thead><tr><th>Ref.</th><th class="r">Cant.</th><th>Ubicación</th><th>Acción</th><th>Motivo</th><th>Sem. en bodega</th></tr></thead>
+      <tbody>${rows.map(({it,c})=>`<tr><td class="mono">${esc(it.ref)}<span class="sub">${esc(it.desc)}</span></td>
+        <td class="r mono num">${it.qty}</td><td style="font-size:12.5px">${esc(it.loc)}</td>
+        <td>${tagFor(c)}</td><td style="font-size:12.5px;color:var(--mut)">${esc(c.reason)}</td>
+        <td class="mono num" style="font-size:12px">${c.weeks??'—'}${c.weeks!=null?' sem':''}</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td colspan="6">${rows.length} ÍTEM(ES) REQUIEREN ACCIÓN</td></tr></tfoot></table></div>`
+      : `<div class="empty"><i data-lucide="check"></i><p>Ningún ítem requiere traslado ni liberación en la semana ${wk}.</p></div>`;
+  }
+  else if(r.tab==='excedentes'){
+    const rows=itemsOfWeek(wk).map(it=>({it,c:classify(it.ref,it.tipo,wk,it.qty)})).filter(x=>x.c.excedente>0);
+    body=rows.length? `<div class="tscroll"><table>
+      <thead><tr><th>Ref.</th><th class="r">Cant. total</th><th class="r">Base</th><th class="r">Excedente</th><th>Ubicación</th><th>Acción</th></tr></thead>
+      <tbody>${rows.map(({it,c})=>`<tr><td class="mono">${esc(it.ref)}<span class="sub">${esc(it.desc)}</span></td>
+        <td class="r mono num">${it.qty}</td><td class="r mono num">${c.cantidadBase}</td>
+        <td class="r mono num" style="color:var(--amber);font-weight:700">${c.excedente}</td>
+        <td style="font-size:12.5px">${esc(it.loc)}</td>
+        <td><span class="tag t-excess">Liberar ${c.excedente} und</span></td></tr>`).join('')}</tbody>
+      <tfoot><tr><td colspan="6">${rows.length} REFERENCIA(S) CON EXCEDENTE</td></tr></tfoot></table></div>`
+      : `<div class="empty"><i data-lucide="check"></i><p>Sin excedentes en la semana ${wk}.</p></div>`;
+  }
+  else if(r.tab==='salidas'){
+    const cmp=compareWeeks(wk);
+    body=cmp.out.length? `<div class="tscroll"><table>
+      <thead><tr><th>Ref.</th><th>Descripción</th><th class="r">Cant. que salió</th><th>Última ubicación</th><th>Estado</th></tr></thead>
+      <tbody>${outSorted(cmp.out).map(e=>`<tr><td class="mono">${esc(e.ref)}</td><td>${esc(e.desc)}</td>
+        <td class="r mono num">${e.qty}</td><td style="font-size:12.5px">${esc(e.loc)}</td>
+        <td><span class="stamp sm c-release">Salida efectiva del inventario</span></td></tr>`).join('')}</tbody>
+      <tfoot><tr><td colspan="5">${cmp.out.length} REFERENCIA(S) SALIERON · SEMANA ${parseWK(cmp.prev).week} → ${parseWK(wk).week}</td></tr></tfoot>
+    </table></div>`
+    : `<div class="empty"><i data-lucide="check"></i><p>Sin salidas entre la semana ${parseWK(cmp.prev).week} y la semana ${parseWK(wk).week}.</p></div>`;
+  }
+  else {
+    const L=store.log;
+    body=L.length? L.slice(0,40).map(e=>`<div class="logline"><span class="lt">${fmtTs(e.ts)}</span>
+      <span class="lk a-${e.type}">${esc(e.type)}</span><span class="lm">${esc(e.msg)}</span></div>`).join('')
+      : `<div class="empty"><i data-lucide="history"></i><p>Sin registros aún.</p></div>`;
+  }
+  $('#view').innerHTML=secHead('05','Reportes y alertas',fmtW(wk))+`
+  <div class="filters no-print">
+    <select class="sel" id="rep-week">${weekOpts.map(w=>`<option value="${w}" ${w===wk?'selected':''}>${w}${w===nowWK()?' — actual':''}</option>`).join('')}</select>
+    <div class="spacer" style="flex:1"></div>
+    <button class="btn small" id="rep-csv-wk"><i data-lucide="file-spreadsheet"></i> CSV semana</button>
+    <button class="btn small" id="rep-csv-all"><i data-lucide="download"></i> CSV todo</button>
+    <button class="btn small" id="rep-print"><i data-lucide="printer"></i> Imprimir</button>
+  </div>
+  <div class="subnav no-print">${tabs.map(([k,l])=>`<button data-t="${k}" class="${r.tab===k?'on':''}">${l}</button>`).join('')}</div>
+  ${body}`;
+  icons();
+  $('#rep-week').onchange=e=>{r.week=e.target.value;vRep();};
+  $$('.subnav button').forEach(b=>b.onclick=()=>{r.tab=b.dataset.t;vRep();});
+  $('#rep-csv-wk').onclick=()=>{dlCSV(`gricol_reporte_${wk}.csv`,[CSV_HEAD,...itemsOfWeek(wk).map(itemRow)]);toast('CSV de la semana descargado.','ok','download');};
+  $('#rep-csv-all').onclick=()=>{dlCSV('gricol_inventario_completo.csv',[CSV_HEAD,...store.items.map(itemRow)]);toast('CSV completo descargado.','ok','download');};
+  $('#rep-print').onclick=()=>window.print();
+}
+
+// ================= 06 · AJUSTES =================
+function vSet(){
+  $('#view').innerHTML=secHead('06','Ajustes','CONFIGURACIÓN LOCAL')+`
+  <div class="set-grid">
+    <div class="panel"><div class="panel-head"><span class="idx">A</span><h3>Cuenta de acceso</h3></div>
+      <div class="panel-body">
+        <p style="font-size:13.5px;margin-bottom:16px">Usuario actual: <b class="mono">${esc(store.auth.user)}</b></p>
+        <form id="f-pass"><div class="frows">
+          <div class="field full"><label>Contraseña actual</label><input class="input" type="password" id="p-old" autocomplete="current-password"></div>
+          <div class="field"><label>Nueva contraseña</label><input class="input" type="password" id="p-new" autocomplete="new-password"></div>
+          <div class="field"><label>Repetir nueva</label><input class="input" type="password" id="p-new2" autocomplete="new-password"></div>
+        </div>
+        <button class="btn primary" style="margin-top:18px"><i data-lucide="key-round"></i> Cambiar contraseña</button></form>
+      </div>
+    </div>
+    <div class="panel"><div class="panel-head"><span class="idx">B</span><h3>Regla de antigüedad</h3></div>
+      <div class="panel-body">
+        <p style="font-size:13.5px;margin-bottom:14px">Las referencias sin clasificar que acumulen este número de semanas en bodega pasan automáticamente a <b>LIBERAR</b>; antes de ese umbral se sugiere <b>TRASLADAR</b>.</p>
+        <div class="field" style="max-width:220px"><label>Semanas para liberar</label>
+          <input class="input num" type="number" min="1" max="20" id="cfg-th" value="${store.cfg.threshold}"></div>
+        <button class="btn primary" style="margin-top:16px" id="cfg-save"><i data-lucide="check"></i> Guardar umbral</button>
+      </div>
+    </div>
+    <div class="panel"><div class="panel-head"><span class="idx">C</span><h3>Ubicaciones</h3></div>
+      <div class="panel-body">
+        <div class="loc-chips" id="loc-chips">${store.locs.map(l=>`<span class="loc-chip">${esc(l)}
+          <button data-l="${esc(l)}" title="Quitar"><i data-lucide="x"></i></button></span>`).join('')}</div>
+        <div class="addrrow"><input class="input" id="loc-new" placeholder="Nueva ubicación…">
+          <button class="btn small" id="loc-add"><i data-lucide="plus"></i> Añadir</button></div>
+      </div>
+    </div>
+    <div class="panel"><div class="panel-head"><span class="idx">D</span><h3>Catálogo de cantidades estándar</h3></div>
+      <div class="panel-body">
+        <p style="font-size:13px;margin-bottom:12px;color:var(--mut)">Define la cantidad estándar de cada referencia. Si al ingresar hay más unidades, el excedente se marca como <b>LIBERAR</b>.</p>
+        <div id="cat-list">${Object.keys(store.catalogo).length? Object.entries(store.catalogo).sort((a,b)=>a[0].localeCompare(b[0])).map(([ref,qty])=>`
+          <div class="catrow" data-ref="${esc(ref)}">
+            <span class="cr">${esc(ref)}</span>
+            <input class="input num" type="number" min="0" value="${qty}" data-cat-qty>
+            <span class="ct">und</span>
+            <button class="btn icon danger" data-cat-del title="Eliminar"><i data-lucide="trash-2"></i></button>
+          </div>`).join('') : `<p style="color:var(--mut);font-size:13px">Sin referencias en el catálogo.</p>`}</div>
+        <div class="addrrow" style="margin-top:14px">
+          <input class="input mono" id="cat-new-ref" placeholder="IMP-0450 / ENS-0088 / FIJ-1201" style="text-transform:uppercase">
+          <input class="input num" id="cat-new-qty" type="number" min="0" placeholder="Cant." style="max-width:110px">
+          <button class="btn small" id="cat-add"><i data-lucide="plus"></i> Añadir</button>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+          <button class="btn small" id="cat-csv"><i data-lucide="download"></i> Exportar catálogo</button>
+          <button class="btn small" id="cat-saveall"><i data-lucide="check"></i> Guardar cambios</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel"><div class="panel-head"><span class="idx">E</span><h3>Referencias fijas (se repiten solas)</h3></div>
+      <div class="panel-body">
+        <p style="font-size:13px;margin-bottom:12px;color:var(--mut)">Las referencias registradas aquí se <b>repiten automáticamente</b> cada semana con la cantidad del catálogo.</p>
+        <div id="fijas-list">${Object.keys(store.fijas).length? Object.entries(store.fijas).map(([ref,meta])=>`
+          <div class="catrow" data-fija-ref="${esc(ref)}" style="grid-template-columns:1fr 1fr 40px">
+            <span class="cr">${esc(ref)}</span>
+            <span style="font-size:12px;color:var(--mut)">${esc(meta.desc||'—')}</span>
+            <button class="btn icon danger" data-fija-del title="Quitar"><i data-lucide="trash-2"></i></button>
+          </div>`).join('') : `<p style="color:var(--mut);font-size:13px">Sin referencias fijas registradas.</p>`}</div>
+        <div class="addrrow" style="margin-top:14px">
+          <input class="input mono" id="fija-new-ref" placeholder="FIJ-1201" style="text-transform:uppercase">
+          <input class="input" id="fija-new-desc" placeholder="Descripción">
+          <button class="btn small" id="fija-add"><i data-lucide="plus"></i> Añadir</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel"><div class="panel-head"><span class="idx">F</span><h3>Datos</h3></div>
+      <div class="panel-body">
+        <p style="font-size:13.5px;margin-bottom:16px">Respalda o restablece la información guardada en este navegador.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn small" id="d-exp"><i data-lucide="download"></i> Respaldo JSON</button>
+          <button class="btn small" id="d-imp-btn"><i data-lucide="file-up"></i> Importar respaldo</button>
+          <input type="file" id="d-imp" accept=".json" hidden>
+          <button class="btn small" id="d-seed"><i data-lucide="database"></i> Cargar ejemplo</button>
+          <button class="btn small red" id="d-wipe"><i data-lucide="trash-2"></i> Borrar todo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="panel"><div class="panel-head"><span class="idx">G</span><h3>Reglas de clasificación automática</h3></div>
+    <div class="panel-body"><ul class="alist">
+      ${RULES_TXT.map((t,i)=>`<li><span class="ix">R${i+1}</span><div class="body"><div class="why" style="margin:0;font-size:13.5px;color:var(--ink)">${esc(t)}</div></div></li>`).join('')}
+    </ul>
+    <p style="font-size:12.5px;color:var(--mut);margin-top:12px">R1–R3 clasifican por prefijo. Si la referencia está en el catálogo, se compara la cantidad: excedente → LIBERAR, faltante → solo aviso. R4 aplica a referencias sin prefijo especial, según antigüedad.</p></div>
+  </div>`;
+  icons();
+  // --- Password
+  $('#f-pass').onsubmit=e=>{
+    e.preventDefault();
+    const a=store.auth;
+    if(b64($('#p-old').value)!==a.hash){toast('La contraseña actual no coincide.','err');return;}
+    if($('#p-new').value.length<4){toast('La nueva contraseña debe tener al menos 4 caracteres.','err');return;}
+    if($('#p-new').value!==$('#p-new2').value){toast('Las contraseñas nuevas no coinciden.','err');return;}
+    store.auth={...a,hash:b64($('#p-new').value)};
+    logEvent('sesión','Cambio de contraseña de '+a.user);
+    toast('Contraseña actualizada.','ok','key-round'); vSet();
+  };
+  // --- Umbral
+  $('#cfg-save').onclick=()=>{
+    const th=Math.max(1,Math.min(20,Number($('#cfg-th').value)||3));
+    store.cfg={threshold:th}; toast(`Umbral actualizado: ${th} semanas para liberar.`,'ok','check');
+  };
+  // --- Ubicaciones
+  const paintLocs=()=>{
+    $('#loc-chips').innerHTML=store.locs.map(l=>`<span class="loc-chip">${esc(l)}
+      <button data-l="${esc(l)}"><i data-lucide="x"></i></button></span>`).join('');
+    $$('#loc-chips button').forEach(b=>b.onclick=()=>{
+      store.locs=store.locs.filter(x=>x!==b.dataset.l);
+      toast(`Ubicación "${b.dataset.l}" eliminada.`,'warn','map-pin'); vSet();
+    });
+    icons();
+  };
+  $('#loc-add').onclick=()=>{
+    const v=$('#loc-new').value.trim(); if(!v)return;
+    if(store.locs.includes(v)){toast('Esa ubicación ya existe.','err');return;}
+    store.locs=[...store.locs,v]; $('#loc-new').value='';
+    toast('Ubicación añadida.','ok','map-pin'); vSet();
+  };
+  paintLocs();
+  // --- Catálogo
+  const catSaveAll=()=>{
+    const cat={...store.catalogo};
+    $$('#cat-list [data-cat-qty]').forEach(inp=>{
+      const row=inp.closest('.catrow'); const ref=row.dataset.ref;
+      const v=Number(inp.value);
+      if(!isNaN(v)&&v>=0) cat[ref]=v;
+    });
+    store.catalogo=cat; toast('Catálogo guardado.','ok','check');
+  };
+  $$('#cat-list [data-cat-del]').forEach(b=>b.onclick=()=>{
+    const ref=b.closest('.catrow').dataset.ref;
+    const cat={...store.catalogo}; delete cat[ref]; store.catalogo=cat;
+    toast(`Referencia ${ref} quitada del catálogo.`,'warn','trash-2'); vSet();
+  });
+  $('#cat-add').onclick=()=>{
+    const ref=$('#cat-new-ref').value.trim().toUpperCase();
+    const qty=Number($('#cat-new-qty').value);
+    if(!ref||isNaN(qty)||qty<0){toast('Referencia y cantidad válidas requeridas.','err');return;}
+    const cat={...store.catalogo}; cat[ref]=qty; store.catalogo=cat;
+    toast(`Añadido al catálogo: ${ref} = ${qty} und.`,'ok','check'); vSet();
+  };
+  $('#cat-saveall').onclick=catSaveAll;
+  $('#cat-csv').onclick=()=>{
+    const rows=[['Referencia','Cantidad estándar'],...Object.entries(store.catalogo).map(([r,q])=>[r,q])];
+    dlCSV('gricol_catalogo.csv',rows); toast('Catálogo exportado.','ok','download');
+  };
+  // --- Fijas
+  $$('#fijas-list [data-fija-del]').forEach(b=>b.onclick=()=>{
+    const ref=b.closest('.catrow').dataset.fijaRef;
+    const f={...store.fijas}; delete f[ref]; store.fijas=f;
+    toast(`Fija ${ref} eliminada.`,'warn','trash-2'); vSet();
+  });
+  $('#fija-add').onclick=()=>{
+    const ref=$('#fija-new-ref').value.trim().toUpperCase();
+    const desc=$('#fija-new-desc').value.trim();
+    if(!ref){toast('La referencia es obligatoria.','err');return;}
+    const f={...store.fijas}; f[ref]={desc,tipo:'Materia prima',loc:store.locs[0]||''};
+    store.fijas=f;
+    if(!store.catalogo[ref]){ const cat={...store.catalogo}; cat[ref]=0; store.catalogo=cat; }
+    toast(`Fija ${ref} registrada. Define su cantidad en el catálogo.`,'ok','pin'); vSet();
+  };
+  // --- Datos
+  $('#d-exp').onclick=()=>{
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([JSON.stringify({items:store.items,locs:store.locs,cfg:store.cfg,log:store.log,catalogo:store.catalogo,fijas:store.fijas},null,2)],{type:'application/json'}));
+    a.download='gricol_respaldo.json'; a.click(); URL.revokeObjectURL(a.href);
+    toast('Respaldo descargado.','ok','download');
+  };
+  $('#d-imp-btn').onclick=()=>$('#d-imp').click();
+  $('#d-imp').onchange=e=>{
+    const f=e.target.files[0]; if(!f)return;
+    const rd=new FileReader();
+    rd.onload=()=>{try{
+      const d=JSON.parse(rd.result);
+      if(!Array.isArray(d.items)) throw 0;
+      store.items=d.items; if(Array.isArray(d.locs))store.locs=d.locs;
+      if(d.cfg)store.cfg=d.cfg; if(Array.isArray(d.log))store.log=d.log;
+      if(d.catalogo)store.catalogo=d.catalogo; if(d.fijas)store.fijas=d.fijas;
+      toast(`Respaldo importado: ${d.items.length} líneas.`,'ok','check'); vSet();
+    }catch{toast('El archivo no es un respaldo válido.','err');}};
+    rd.readAsText(f);
+  };
+  $('#d-seed').onclick=()=>{
+    openModal(`<div class="m-head"><i data-lucide="database"></i><h3>Cargar datos de ejemplo</h3>
+      <button class="btn icon" onclick="closeModal()"><i data-lucide="x"></i></button></div>
+      <div class="m-body">Se reemplazará el inventario actual por un conjunto de demostración. ¿Continuar?</div>
+      <div class="m-foot"><button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn primary" id="m-seed"><i data-lucide="database"></i> Cargar</button></div>`);
+    $('#m-seed').onclick=()=>{
+      lsRawDel('gricol_seeded'); store.items=[]; store.catalogo={}; store.fijas={};
+      seedDemo(); closeModal(); toast('Datos de ejemplo cargados.','ok','database'); vSet();
+    };
+  };
+  $('#d-wipe').onclick=()=>{
+    openModal(`<div class="m-head"><i data-lucide="trash-2"></i><h3>Borrar todos los datos</h3>
+      <button class="btn icon" onclick="closeModal()"><i data-lucide="x"></i></button></div>
+      <div class="m-body">Se eliminarán <b>todos los ítems</b>, el catálogo, las fijas y la bitácora. ¿Continuar?</div>
+      <div class="m-foot"><button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn red" id="m-wipe"><i data-lucide="trash-2"></i> Borrar todo</button></div>`);
+    $('#m-wipe').onclick=()=>{
+      store.items=[]; store.log=[]; store.catalogo={}; store.fijas={}; lsRawDel('gricol_seeded');
+      closeModal(); toast('Inventario vacío.','warn','trash-2'); setView('dashboard');
+    };
+  };
+}
+
+// ---------- Arranque ----------
+if(sessGet()) renderApp(); else renderLogin();
+</script>
+</body>
+</html>
