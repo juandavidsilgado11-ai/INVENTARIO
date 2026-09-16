@@ -482,7 +482,6 @@ function classify(ref,tipo,wk,cantidad){
     return {kind:'fixed', label:'Inventario fijo', rule:0, reason:'Registrada como referencia fija · se repite cada semana',
             cantidadBase:baseQtyF2, excedente:0, faltante:0, catalogoOK:true, esExcedente:false};
   }
-  }
   var base=classifyBase(ref,tipo,wk);
   const r=(ref||'').toUpperCase();
   const cat=store.catalogo;
