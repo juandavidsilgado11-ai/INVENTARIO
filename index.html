@@ -1309,6 +1309,9 @@ function vImport(){
       <button class="btn icon" onclick="closeModal()"><i data-lucide="x"></i></button></div>
       <div class="m-body"><ul class="alist">
         <li><span class="ix">+${added}</span><div class="body"><div class="r1"><b class="ref">Referencias nuevas</b></div><div class="why">${addedQty} unidades agregadas.</div></div></li>
+         ${fijasReg?`<li><span class="ix" style="color:var(--r-600)">★${fijasReg}</span><div class="body"><div class="r1"><b class="ref">Referencias registradas como FIJAS</b></div><div class="why">Se repetirán automáticamente cada semana.</div></div></li>`:''}
+        ${catReg?`<li><span class="ix" style="color:var(--r-600)">◉${catReg}</span><div class="body"><div class="r1"><b class="ref">Añadidas al catálogo</b></div><div class="why">Se guardó su cantidad estándar.</div></div></li>`:''}
+
         ${merged?`<li><span class="ix">Σ${merged}</span><div class="body"><div class="r1"><b class="ref">Ya existían — cantidades sumadas</b></div><div class="why">${mergedQty} unidades adicionadas.</div></div></li>`:''}
         ${excCreados?`<li><span class="ix" style="color:var(--amber)">⚠${excCreados}</span><div class="body"><div class="r1"><b class="ref" style="color:var(--amber)">Excedentes detectados</b></div><div class="why">${excQty} und creadas como <b>-EXC</b> para LIBERAR.</div></div></li>`:''}
         ${skipped?`<li><span class="ix">${skipped}</span><div class="body"><div class="r1"><b class="ref">Omitidas (ya existían)</b></div></div></li>`:''}
