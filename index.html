@@ -1377,7 +1377,7 @@ function vInv(){
       <input class="input" id="fl-q" placeholder="Buscar referencia o descripción…" value="${esc(f.q)}"></div>
     <select class="sel" id="fl-week">
       <option value="all" ${f.week==='all'?'selected':''}>Todas las semanas</option>
-      ${weekOpts.map(w=>`<option value="${w}" ${f.week===w?'selected':''}>${w}${w===nowWK()?' — actual':''}</option>`).join('')}
+      ${weekOpts.map(w=>`<option value="${w}" ${f.week===w?'selected':''}>${fmtW(w)}${w===nowWK()?' — actual':''}</option>`).join('')}
     </select>
     <select class="sel" id="fl-loc">
       <option value="all">Todas las ubicaciones</option>
