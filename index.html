@@ -424,6 +424,7 @@ const fmtTs = ts=>{const d=new Date(ts);return `${String(d.getDate()).padStart(2
 
 // ---------- Almacenamiento ----------
 const DEF_LOCS = ['Bodega Central','Zona de Muestras','Oficina Técnica','Andén 1','Andén 2','Cuarentena','Patio de Cargas'];
+  const IMG_BASE = 'https://juandavidsilgado11-ai.github.io/INVENTARIO/imagenes/';
 const TIPOS = ['Materia prima','Producto terminado','Empaque','Repuesto','Muestra','Herramental','Otro'];
 const store = {
   get items(){ return lsGet('gricol_items',[]) },
