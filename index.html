@@ -1678,6 +1678,7 @@ function vSet(){
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
           <button class="btn small" id="cat-csv"><i data-lucide="download"></i> Exportar catálogo</button>
           <button class="btn small" id="cat-saveall"><i data-lucide="check"></i> Guardar cambios</button>
+          <button class="btn small" id="cat-sync"><i data-lucide="refresh-cw"></i> Sincronizar catálogo desde inventario</button>
         </div>
       </div>
     </div>
@@ -1777,6 +1778,20 @@ function vSet(){
     const rows=[['Referencia','Cantidad estándar'],...Object.entries(store.catalogo).map(([r,q])=>[r,q])];
     dlCSV('gricol_catalogo.csv',rows); toast('Catálogo exportado.','ok','download');
   };
+  $('#cat-sync').onclick=()=>{
+  const wk=nowWK();
+  const items=itemsOfWeek(wk);
+  if(!items.length){ toast('No hay inventario en la semana actual.','warn','alert-triangle'); return; }
+  const cat={...store.catalogo};
+  let actualizadas=0;
+  for(const it of items){
+    if(cat[it.ref]!=null && cat[it.ref]!==it.qty){ cat[it.ref]=Number(it.qty); actualizadas++; }
+  }
+  store.catalogo=cat;
+  logEvent('catálogo',`Sincronizado desde inventario semana ${wk}: ${actualizadas} referencia(s) actualizada(s)`);
+  toast(`Catálogo sincronizado: ${actualizadas} referencia(s) actualizada(s).`,'ok','refresh-cw');
+  vSet();
+};
   // --- Fijas
   $$('#fijas-list [data-fija-del]').forEach(b=>b.onclick=()=>{
     const ref=b.closest('.catrow').dataset.fijaRef;
