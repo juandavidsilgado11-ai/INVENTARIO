@@ -1598,9 +1598,9 @@ function vRep(){
       <tbody>${outSorted(cmp.out).map(e=>`<tr><td class="mono">${esc(e.ref)}</td><td>${esc(e.desc)}</td>
         <td class="r mono num">${e.qty}</td><td style="font-size:12.5px">${esc(e.loc)}</td>
         <td><span class="stamp sm c-release">Salida efectiva del inventario</span></td></tr>`).join('')}</tbody>
-      <tfoot><tr><td colspan="5">${cmp.out.length} REFERENCIA(S) SALIERON · SEMANA ${parseWK(cmp.prev).week} → ${parseWK(wk).week}</td></tr></tfoot>
+      <tfoot><tr><td colspan="5">${cmp.out.length} REFERENCIA(S) SALIERON · ${fmtW(cmp.prev)} → ${fmtW(wk)}</td></tr></tfoot>
     </table></div>`
-    : `<div class="empty"><i data-lucide="check"></i><p>Sin salidas entre la semana ${parseWK(cmp.prev).week} y la semana ${parseWK(wk).week}.</p></div>`;
+    : `<div class="empty"><i data-lucide="check"></i><p>Sin salidas entre ${fmtW(cmp.prev)} y ${fmtW(wk)}.</p></div>`;
   }
   else {
     const L=store.log;
