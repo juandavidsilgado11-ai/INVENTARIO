@@ -1435,6 +1435,7 @@ function vInv(){
     icons();
     $$('#inv-tbody [data-ed]').forEach(b=>b.onclick=()=>editModal(b.dataset.ed,()=>{paintChips();paintRows();}));
     $$('#inv-tbody [data-del]').forEach(b=>b.onclick=()=>deleteModal(b.dataset.del,()=>{paintChips();paintRows();}));
+    $$('#inv-tbody [data-img]').forEach(b=>b.onclick=()=>verImagen(b.dataset.img));
   };
   $('#fl-q').addEventListener('input',e=>{f.q=e.target.value;paintChips();paintRows();});
   $('#fl-week').onchange=e=>{f.week=e.target.value;vInv();};
