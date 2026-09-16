@@ -1838,6 +1838,17 @@ function vSet(){
 }
 
 // ---------- Arranque ----------
+  function verImagen(ref){
+  const refSafe=String(ref||'').toUpperCase();
+  const url=IMG_BASE+encodeURIComponent(refSafe)+'.png';
+  openModal(`<div class="m-head"><i data-lucide="image"></i><h3>Foto — ${esc(ref)}</h3>
+    <button class="btn icon" onclick="closeModal()"><i data-lucide="x"></i></button></div>
+    <div class="m-body" style="text-align:center">
+      <img src="${url}" alt="${esc(ref)}" style="max-width:100%;max-height:70vh;border:2px solid var(--ink)"
+        onerror="this.onerror=null;this.src=IMG_BASE+encodeURIComponent('${refSafe}')+'.jpg';this.onerror=function(){this.style.display='none';this.parentNode.innerHTML='<p style=&quot;color:var(--mut);padding:40px&quot;>No hay foto para esta referencia.<br>Sube la imagen como <b>${esc(refSafe)}.png</b> o <b>${esc(refSafe)}.jpg</b> a la carpeta <b>imagenes/</b> del repositorio.</p>';}">
+    </div>
+    <div class="m-foot"><button class="btn" onclick="closeModal()">Cerrar</button></div>`);
+}
 if(sessGet()) renderApp(); else renderLogin();
 </script>
 </body>
