@@ -728,7 +728,7 @@ function openKeepModal(wk,prevItems){
     store.lastPrompt=wk;
     logEvent('ingreso',`Inicio ${wk}: ${copiadas} muestra(s) mantenida(s), ${eliminadas} marcada(s) como salida`);
     closeModal();
-    toast(`Semana ${parseWK(wk).week} iniciada. ${copiadas} muestra(s) mantenida(s).`,'ok','calendar-check');
+    toast(`${fmtW(wk)} iniciada. ${copiadas} muestra(s) mantenida(s).`,'ok','calendar-check');
     renderView();
   };
 }
