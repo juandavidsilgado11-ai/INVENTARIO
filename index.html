@@ -912,7 +912,7 @@ function vDashboard(){
     <div class="kpi"><div class="v num alert">${counts.move+counts.release}</div><div class="l">Por trasladar / liberar</div></div>
     <div class="kpi"><div class="v num amber">${counts.excess}</div><div class="l">Con excedente</div></div>
     <div class="kpi"><div class="v num ${cmp.out.length?'alert':''}">${cmp.out.length}</div><div class="l">Salidas efectivas</div></div>
-    <div class="kpi"><div class="v num ${delta<0?'alert':''}">${delta>=0?'+':''}${delta}</div><div class="l">Balance vs S${parseWK(cmp.prev).week}</div></div>
+    <div class="kpi"><div class="v num ${delta<0?'alert':''}">${delta>=0?'+':''}${delta}</div><div class="l">Balance vs ${fmtW(cmp.prev)}</div></div>
   </div>
 
   <div class="cols">
