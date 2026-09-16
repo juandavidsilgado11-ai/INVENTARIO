@@ -406,7 +406,20 @@ const parseWK = k=>{const[y,w]=k.split('-S');return{year:+y,week:+w}};
 const dateOfWK = k=>{const{year,week}=parseWK(k);return new Date(Date.UTC(year,0,1+(week-1)*7))};
 const prevWK = k=>weekKeyOf(dateOfWK(k).getTime()-MS_W);
 const weeksDiff = (a,b)=>Math.round((dateOfWK(b)-dateOfWK(a))/MS_W);
-const fmtW = k=>{const{year,week}=parseWK(k);return `Semana ${String(week).padStart(2,'0')} · ${year}`};
+const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const fmtW = k=>{
+  if(!k || k==='all') return 'Todas las semanas';
+  const {year,week}=parseWK(k);
+  const ene4=new Date(Date.UTC(year,0,4));
+  const dn=ene4.getUTCDay()||7;
+  const lunesSem1=new Date(Date.UTC(year,0,4-dn+1));
+  const lunes=new Date(lunesSem1.getTime()+(week-1)*7*86400000);
+  const dia=lunes.getUTCDate();
+  const mes=lunes.getUTCMonth();
+  const anio=lunes.getUTCFullYear();
+  const semMes=Math.min(4,Math.floor((dia-1)/7)+1);
+  return `Semana ${semMes} · ${MESES[mes]} ${anio}`;
+};
 const fmtTs = ts=>{const d=new Date(ts);return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`};
 
 // ---------- Almacenamiento ----------
