@@ -1002,7 +1002,7 @@ function vManual(){
         </div>
         <div class="field">
           <label>Semana</label>
-          <select class="input" id="i-week">${weekOpts.map(w=>`<option value="${w}" ${w===e.week?'selected':''}>${w}${w===nowWK()?' — actual':''}</option>`).join('')}</select>
+          <select class="input" id="i-week">${weekOpts.map(w=>`<option value="${w}" ${w===e.week?'selected':''}>${fmtW(w)}${w===nowWK()?' — actual':''}</option>`).join('')}</select>
         </div>
         <div class="field full">
           <label>Observaciones</label>
