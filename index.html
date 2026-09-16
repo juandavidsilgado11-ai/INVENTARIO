@@ -480,13 +480,24 @@ function classify(ref,tipo,wk,cantidad){
 
   // Fijas: solo validar que existan en catálogo
   if(esFija){
-    if(cat[ref]!=null && cantidad!=null && Number(cantidad)!==cat[ref]){
-      return {...base, cantidadBase:cat[ref], excedente:null, faltante:cat[ref]-Number(cantidad), catalogoOK:true,
-        reason:`Inventario fijo · cantidad estándar: ${cat[ref]} und. Ingresada: ${cantidad}.`};
+    if(cat[ref]==null){
+      return {...base, cantidadBase:null, excedente:null, faltante:null, catalogoOK:false,
+        reason: base.reason + ' · Esta referencia no está en el catálogo de cantidades estándar.'};
     }
-    return {...base, cantidadBase:cat[ref]??null, excedente:null, faltante:null, catalogoOK:cat[ref]!=null};
+    var baseQtyF=Number(cat[ref]);
+    var qF=Number(cantidad);
+    if(cantidad==null || isNaN(qF)) return {...base, cantidadBase:baseQtyF, excedente:null, faltante:null, catalogoOK:true};
+    if(qF>baseQtyF){
+      return {...base, cantidadBase:baseQtyF, excedente:qF-baseQtyF, faltante:0, catalogoOK:true,
+        reason:`Inventario fijo · cantidad estándar: ${baseQtyF} und. Excedente: ${qF-baseQtyF} und → liberar solo el excedente.`};
+    }
+    if(qF<baseQtyF){
+      return {...base, cantidadBase:baseQtyF, excedente:0, faltante:baseQtyF-qF, catalogoOK:true,
+        reason:`Inventario fijo · cantidad estándar: ${baseQtyF} und. Faltan ${baseQtyF-qF} und.`};
+    }
+    return {...base, cantidadBase:baseQtyF, excedente:0, faltante:0, catalogoOK:true,
+      reason:`Inventario fijo · cantidad estándar: ${baseQtyF} und · OK.`};
   }
-
   // Muestras (import / assay): validar contra catálogo
   if(esMuestra){
     if(cat[ref]==null){
