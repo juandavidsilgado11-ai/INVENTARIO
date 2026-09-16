@@ -460,7 +460,13 @@ function classifyBase(ref,tipo,wk){
 // ---------- Clasificación con control de excedente ----------
 // Devuelve: { kind, label, reason, rule, excedente, faltante, cantidadBase, catalogoOK, esExcedente }
 function classify(ref,tipo,wk,cantidad){
-  const base=classifyBase(ref,tipo,wk);
+  var refU=(ref||'').toUpperCase();
+  if(store.fijas[ref] || store.fijas[refU]){
+    var catF=store.catalogo[ref] || store.catalogo[refU];
+    return {kind:'fixed', label:'Inventario fijo', rule:0, reason:'Registrada como referencia fija · se repite cada semana',
+            cantidadBase:catF!=null?catF:null, excedente:null, faltante:null, catalogoOK:catF!=null, esExcedente:false};
+  }
+  var base=classifyBase(ref,tipo,wk);
   const r=(ref||'').toUpperCase();
   const cat=store.catalogo;
   const esMuestra = base.kind==='import' || base.kind==='assay';
