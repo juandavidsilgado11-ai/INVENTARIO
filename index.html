@@ -1204,7 +1204,7 @@ function vImport(){
       <div class="panel-body">
         <div class="frows" style="margin-bottom:14px">
           <div class="field"><label>Semana para filas sin semana</label>
-            ${weekOpts.map(w=>`<option value="${w}" ${w===im.week?'selected':''}>${fmtW(w)}${w===nowWK()?' — actual':''}</option>`).join('')}
+            <select class="input" id="imp-week">${weekOpts.map(w=>`<option value="${w}" ${w===im.week?'selected':''}>${fmtW(w)}${w===nowWK()?' — actual':''}</option>`).join('')}</select>
           <div class="field"><label>Ubicación para filas sin ubicación</label>
             <select class="input" id="imp-loc">${store.locs.map(l=>`<option ${l===im.loc?'selected':''}>${esc(l)}</option>`).join('')}</select></div>
           <div class="field full"><label>Si la referencia ya existe en esa semana</label>
