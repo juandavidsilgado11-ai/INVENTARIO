@@ -1494,7 +1494,7 @@ function vCmp(){
       <td class="mono">${esc(e.ref)}</td><td>${esc(e.desc)}</td><td class="r mono num">${e.qty}</td>
       <td style="font-size:12.5px">${esc(e.loc)}</td>
       <td><span class="stamp sm c-release">Salida efectiva del inventario</span></td></tr>`).join('')}</tbody></table>`
-    : `<div class="empty"><i data-lucide="check"></i><p>Todas las referencias de la semana ${parseWK(cmp.prev).week} continúan en la semana ${parseWK(wk).week}.</p></div>`;
+    : `<div class="empty"><i data-lucide="check"></i><p>Todas las referencias de ${fmtW(cmp.prev)} continúan en ${fmtW(wk)}.</p></div>`;
   const innT = cmp.inn.length? `<table>
     <thead><tr><th>Ref.</th><th>Descripción</th><th class="r">Cant.</th><th>Ubicación</th><th>Clasificación</th></tr></thead>
     <tbody>${outSorted(cmp.inn).map(e=>{const c=classify(e.ref,e.tipo,wk,e.qty);return`<tr>
