@@ -687,7 +687,7 @@ function openKeepModal(wk,prevItems){
     agg.get(it.ref).qty+=Number(it.qty)||0;
   }
   const rows=[...agg.values()];
-  const html=`<div class="m-head"><i data-lucide="calendar-check"></i><h3>Inicio de semana ${parseWK(wk).week} · ${parseWK(wk).year}</h3>
+  const html=`<div class="m-head"><i data-lucide="calendar-check"></i><h3>Inicio de ${fmtW(wk)}</h3>
     <button class="btn icon" onclick="skipKeepModal()"><i data-lucide="x"></i></button></div>
     <div class="m-body">
       <p style="margin-bottom:14px;font-size:13.5px">Estas referencias de <b>importación</b> y <b>ensayo</b> estaban la semana pasada. Marca las que <b>continúan</b> en esta semana. Las que desmarques se considerarán <b>salida efectiva del inventario</b>.</p>
