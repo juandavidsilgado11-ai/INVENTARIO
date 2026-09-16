@@ -1472,7 +1472,7 @@ function deleteModal(id,after){
   const it=store.items.find(i=>i.id===id); if(!it)return;
   openModal(`<div class="m-head"><i data-lucide="trash-2"></i><h3>Eliminar ítem</h3>
     <button class="btn icon" onclick="closeModal()"><i data-lucide="x"></i></button></div>
-  <div class="m-body">¿Eliminar <b class="mono">${esc(it.ref)}</b> — ${esc(it.desc)} (${it.qty} und · ${esc(it.loc)} · ${it.week})?<br>
+  <div class="m-body">¿Eliminar <b class="mono">${esc(it.ref)}</b> — ${esc(it.desc)} (${it.qty} und · ${esc(it.loc)} · ${fmtW(it.week)})?<br>
   <span style="color:var(--mut);font-size:13px">Esta acción queda registrada en la bitácora y no se puede deshacer.</span></div>
   <div class="m-foot"><button class="btn" onclick="closeModal()">Cancelar</button>
     <button class="btn red" id="m-del"><i data-lucide="trash-2"></i> Eliminar</button></div>`);
