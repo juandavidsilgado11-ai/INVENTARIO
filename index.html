@@ -1171,6 +1171,17 @@ function vImport(){
               <option value="sum" ${im.sumDup?'selected':''}>Sumar las cantidades</option>
               <option value="skip" ${!im.sumDup?'selected':''}>Omitir esa fila</option>
             </select></div>
+          <div class="field full" style="border:1.5px dashed var(--mut);padding:10px 12px;background:var(--dim)">
+            <label style="display:flex;align-items:center;gap:10px;font-family:var(--fu);font-size:13px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--ink);cursor:pointer">
+              <input type="checkbox" id="imp-fijo" style="width:18px;height:18px;accent-color:var(--r-600)" ${im.marcarFijo?'checked':''}>
+              <span>Registrar como <b>INVENTARIO FIJO</b> (se repetirán solas cada semana)</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;font-family:var(--fu);font-size:13px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--ink);cursor:pointer;margin-top:8px">
+              <input type="checkbox" id="imp-catalogo" style="width:18px;height:18px;accent-color:var(--r-600)" ${im.marcarCatalogo?'checked':''}>
+              <span>Añadir también al <b>catálogo</b> con la cantidad del Excel</span>
+            </label>
+            <p style="font-size:11.5px;color:var(--mut);margin-top:8px">Solo aplica a filas con Tipo = MUESTRA o PRUEBA.</p>
+          </div>
         </div>
         <ol class="steps">
           <li>En Excel ordena las columnas: <b>Referencia · Descripción · Cantidad · Tipo · Ubicación · Semana · Observaciones</b>. Solo Referencia y Cantidad son obligatorias.</li>
