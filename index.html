@@ -1513,11 +1513,11 @@ function vCmp(){
   $('#view').innerHTML=secHead('04','Comparativo semanal','VS SEMANA ANTERIOR')+`
   <div class="cmp-head no-print">
     <span style="font-family:var(--fd);font-size:11px;font-weight:600;letter-spacing:.14em;color:var(--mut)">SEMANA A COMPARAR</span>
-    <select class="sel" id="cmp-week">${weekOpts.map(w=>`<option value="${w}" ${w===wk?'selected':''}>${w}${w===nowWK()?' — actual':''}</option>`).join('')}</select>
-    <div class="cmp-arrow"><span class="wk">${wk}</span><i data-lucide="arrow-right"></i><span class="wk" style="background:#fff">${cmp.prev}</span></div>
+    <select class="sel" id="cmp-week">${weekOpts.map(w=>`<option value="${w}" ${w===wk?'selected':''}>${fmtW(w)}${w===nowWK()?' — actual':''}</option>`).join('')}</select>
+    <div class="cmp-arrow"><span class="wk">${fmtW(wk)}</span><i data-lucide="arrow-right"></i><span class="wk" style="background:#fff">${fmtW(cmp.prev)}</span></div>
     <span class="delta ${delta<0?'down':'up'}">${delta>=0?'+':''}${delta} UND</span>
   </div>
-  ${cmp.hasPrev?'':`<div class="warnline"><i data-lucide="alert-triangle" style="width:14px;height:14px;vertical-align:-2px"></i> No hay datos de la semana anterior (${cmp.prev}). El comparativo solo refleja la semana seleccionada.</div>`}
+  <div class="warnline"><i data-lucide="alert-triangle" style="width:14px;height:14px;vertical-align:-2px"></i> No hay datos de la semana anterior (${fmtW(cmp.prev)}). El comparativo solo refleja la semana seleccionada.</div>
   <div class="band no-print">
     <div class="kpi"><div class="v num">${cmp.qA}</div><div class="l">Und. ${fmtW(cmp.prev)}</div></div>
     <div class="kpi"><div class="v num">${cmp.qB}</div><div class="l">Und. ${fmtW(wk)}</div></div>
