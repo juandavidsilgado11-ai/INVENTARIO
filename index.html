@@ -1267,8 +1267,19 @@ function vImport(){
     }
     const items=store.items;
     let added=0,addedQty=0,merged=0,mergedQty=0,skipped=0,excCreados=0,excQty=0;
+    let fijasReg=0, catReg=0;
     const newLocs=[];
     for(const g of groups.values()){
+      var tipoG=(g.tipo||'').toUpperCase();
+      var esFija=(tipoG.indexOf('MUESTRA')>=0 || tipoG.indexOf('PRUEBA')>=0);
+      if(im.marcarFijo && esFija){
+        var f={...store.fijas};
+        if(!f[g.ref]){ f[g.ref]={desc:g.desc||'—',tipo:g.tipo,loc:g.loc||im.loc}; store.fijas=f; fijasReg++; }
+      }
+      if(im.marcarCatalogo && esFija){
+        var catC={...store.catalogo};
+        if(catC[g.ref]==null){ catC[g.ref]=g.qty; store.catalogo=catC; catReg++; }
+      }
       const c=classify(g.ref,g.tipo,g.week,g.qty);
       let qtyBase=g.qty, excedente=0;
       if(c.excedente>0){ qtyBase=c.cantidadBase; excedente=c.excedente; }
