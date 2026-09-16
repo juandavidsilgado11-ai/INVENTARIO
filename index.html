@@ -463,8 +463,25 @@ function classify(ref,tipo,wk,cantidad){
   var refU=(ref||'').toUpperCase();
   if(store.fijas[ref] || store.fijas[refU]){
     var catF=store.catalogo[ref] || store.catalogo[refU];
+    var baseQtyF2=catF!=null?Number(catF):null;
+    var qF2=Number(cantidad);
+    if(baseQtyF2==null || cantidad==null || isNaN(qF2)){
+      return {kind:'fixed', label:'Inventario fijo', rule:0, reason:'Registrada como referencia fija · se repite cada semana',
+              cantidadBase:baseQtyF2, excedente:null, faltante:null, catalogoOK:baseQtyF2!=null, esExcedente:false};
+    }
+    if(qF2>baseQtyF2){
+      return {kind:'fixed', label:'Inventario fijo', rule:0,
+              reason:`Inventario fijo · cantidad estándar: ${baseQtyF2} und. Excedente: ${qF2-baseQtyF2} und → liberar solo el excedente.`,
+              cantidadBase:baseQtyF2, excedente:qF2-baseQtyF2, faltante:0, catalogoOK:true, esExcedente:false};
+    }
+    if(qF2<baseQtyF2){
+      return {kind:'fixed', label:'Inventario fijo', rule:0,
+              reason:`Inventario fijo · cantidad estándar: ${baseQtyF2} und. Faltan ${baseQtyF2-qF2} und.`,
+              cantidadBase:baseQtyF2, excedente:0, faltante:baseQtyF2-qF2, catalogoOK:true, esExcedente:false};
+    }
     return {kind:'fixed', label:'Inventario fijo', rule:0, reason:'Registrada como referencia fija · se repite cada semana',
-            cantidadBase:catF!=null?catF:null, excedente:null, faltante:null, catalogoOK:catF!=null, esExcedente:false};
+            cantidadBase:baseQtyF2, excedente:0, faltante:0, catalogoOK:true, esExcedente:false};
+  }
   }
   var base=classifyBase(ref,tipo,wk);
   const r=(ref||'').toUpperCase();
