@@ -1610,7 +1610,7 @@ function vRep(){
   }
   $('#view').innerHTML=secHead('05','Reportes y alertas',fmtW(wk))+`
   <div class="filters no-print">
-    <select class="sel" id="rep-week">${weekOpts.map(w=>`<option value="${w}" ${w===wk?'selected':''}>${w}${w===nowWK()?' — actual':''}</option>`).join('')}</select>
+    <select class="sel" id="rep-week">${weekOpts.map(w=>`<option value="${w}" ${w===wk?'selected':''}>${fmtW(w)}${w===nowWK()?' — actual':''}</option>`).join('')}</select>
     <div class="spacer" style="flex:1"></div>
     <button class="btn small" id="rep-csv-wk"><i data-lucide="file-spreadsheet"></i> CSV semana</button>
     <button class="btn small" id="rep-csv-all"><i data-lucide="download"></i> CSV todo</button>
