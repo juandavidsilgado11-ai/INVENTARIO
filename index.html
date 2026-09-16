@@ -923,7 +923,7 @@ function vDashboard(){
         ${alerts.length||cmp.out.length ? `<ul class="alist">
           ${cmp.out.map((e,i)=>`<li><span class="ix">${String(i+1).padStart(2,'0')}</span>
             <div class="body"><div class="r1"><span class="ref">${esc(e.ref)}</span><span class="tag t-out">Salida efectiva del inventario</span><span class="mono" style="font-size:11px;color:var(--mut)">${e.qty} und · ${esc(e.loc)}</span></div>
-            <div class="why">Estaba en la semana ${parseWK(cmp.prev).week} y no aparece en la actual. ${esc(e.desc)}</div></div></li>`).join('')}
+            <div class="why">Estaba en la semana ${fmtW(cmp.prev)} y no aparece en la actual. ${esc(e.desc)}</div></div></li>`).join('')}
           ${alerts.map((e,i)=>{const c=classify(e.ref,e.tipo,W0,e.qty);const j=cmp.out.length+i+1;return`
             <li><span class="ix">${String(j).padStart(2,'0')}</span>
             <div class="body"><div class="r1"><span class="ref">${esc(e.ref)}</span>${tagFor(c)}${c.excedente>0?`<span class="tag t-excess">Excedente ${c.excedente} und → Liberar</span>`:''}<span class="mono" style="font-size:11px;color:var(--mut)">${e.qty} und · ${esc(e.loc)}</span></div>
