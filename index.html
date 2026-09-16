@@ -1426,8 +1426,9 @@ function vInv(){
         <td>${tagFor(c)}${excBadge}<span class="sub">${esc(c.reason)}</span></td>
         <td style="font-size:12.5px;white-space:nowrap">${esc(it.loc)}</td>
         <td class="mono" style="font-size:12px">${fmtW(it.week)}</td>
-        <td><div class="rowacts no-print">
-          <button class="btn icon" title="Editar" data-ed="${it.id}"><i data-lucide="pencil"></i></button>
+          <div class="rowacts no-print">
+  <button class="btn icon" title="Ver foto" data-img="${esc(it.ref)}"><i data-lucide="image"></i></button>
+  <button class="btn icon" title="Editar" data-ed="${it.id}"><i data-lucide="pencil"></i></button>
           <button class="btn icon danger" title="Eliminar" data-del="${it.id}"><i data-lucide="trash-2"></i></button>
         </div></td></tr>`;
     }).join('') : `<tr><td colspan="8"><div class="empty"><i data-lucide="inbox"></i><p>Sin resultados con los filtros actuales.</p></div></td></tr>`;
