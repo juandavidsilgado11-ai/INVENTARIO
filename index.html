@@ -426,26 +426,50 @@ const fmtTs = ts=>{const d=new Date(ts);return `${String(d.getDate()).padStart(2
 const DEF_LOCS = ['Bodega Central','Zona de Muestras','Oficina Técnica','Andén 1','Andén 2','Cuarentena','Patio de Cargas'];
   const IMG_BASE = 'https://juandavidsilgado11-ai.github.io/INVENTARIO/imagenes/';
 const TIPOS = ['Materia prima','Producto terminado','Empaque','Repuesto','Muestra','Herramental','Otro'];
+var _cache = {};
+
 const store = {
-  get items(){ return lsGet('gricol_items',[]) },
-  set items(v){ lsSet('gricol_items',v) },
-  get log(){ return lsGet('gricol_log',[]) },
-  set log(v){ lsSet('gricol_log',v.slice(0,200)) },
-  get locs(){ return lsGet('gricol_locs',DEF_LOCS) },
-  set locs(v){ lsSet('gricol_locs',v) },
-  get cfg(){ return lsGet('gricol_cfg',{threshold:3}) },
-  set cfg(v){ lsSet('gricol_cfg',v) },
-  get auth(){ return lsGet('gricol_auth',{user:'admin',hash:b64('gricol2025')}) },
-  set auth(v){ lsSet('gricol_auth',v) },
-  // Catálogo de cantidades estándar: { "IMP-0450": 24, "ENS-0088": 4, "FIJ-1201": 240 }
-  get catalogo(){ return lsGet('gricol_catalogo',{}) },
-  set catalogo(v){ lsSet('gricol_catalogo',v) },
-  // Fijas registradas (para repetir automáticamente)
-  get fijas(){ return lsGet('gricol_fijas',{}) },
-  set fijas(v){ lsSet('gricol_fijas',v) },
-  // Última semana en que se preguntó "¿mantener referencias?"
-  get lastPrompt(){ return lsGet('gricol_lastprompt','') },
-  set lastPrompt(v){ lsSet('gricol_lastprompt',v) },
+  get items(){
+    if(_cache.items===undefined) _cache.items = lsGet('gricol_items',[]);
+    return _cache.items;
+  },
+  set items(v){ _cache.items=v; lsSet('gricol_items',v); },
+  get log(){
+    if(_cache.log===undefined) _cache.log = lsGet('gricol_log',[]);
+    return _cache.log;
+  },
+  set log(v){ _cache.log=v; lsSet('gricol_log',v.slice(0,200)); },
+  get locs(){
+    if(_cache.locs===undefined) _cache.locs = lsGet('gricol_locs',DEF_LOCS);
+    return _cache.locs;
+  },
+  set locs(v){ _cache.locs=v; lsSet('gricol_locs',v); },
+  get cfg(){
+    if(_cache.cfg===undefined) _cache.cfg = lsGet('gricol_cfg',{threshold:3});
+    return _cache.cfg;
+  },
+  set cfg(v){ _cache.cfg=v; lsSet('gricol_cfg',v); },
+  get auth(){
+    if(_cache.auth===undefined) _cache.auth = lsGet('gricol_auth',{user:'admin',hash:b64('gricol2025')});
+    return _cache.auth;
+  },
+  set auth(v){ _cache.auth=v; lsSet('gricol_auth',v); },
+  get catalogo(){
+    if(_cache.catalogo===undefined) _cache.catalogo = lsGet('gricol_catalogo',{});
+    return _cache.catalogo;
+  },
+  set catalogo(v){ _cache.catalogo=v; lsSet('gricol_catalogo',v); },
+  get fijas(){
+    if(_cache.fijas===undefined) _cache.fijas = lsGet('gricol_fijas',{});
+    return _cache.fijas;
+  },
+  set fijas(v){ _cache.fijas=v; lsSet('gricol_fijas',v); },
+  get lastPrompt(){
+    if(_cache.lastPrompt===undefined) _cache.lastPrompt = lsGet('gricol_lastprompt','');
+    return _cache.lastPrompt;
+  },
+  set lastPrompt(v){ _cache.lastPrompt=v; lsSet('gricol_lastprompt',v); },
+};
 };
 function logEvent(type,msg){ const L=store.log; L.unshift({ts:Date.now(),type,msg}); store.log=L; }
 
