@@ -1710,6 +1710,14 @@ function vSet(){
         </div>
       </div>
     </div>
+    <div class="panel"><div class="panel-head"><span class="idx">D2</span><h3>Tipos de artículo</h3></div>
+        <div class="panel-body">
+          <p style="font-size:13px;margin-bottom:12px;color:var(--mut)">Estos tipos aparecen en el desplegable al ingresar o editar ítems. Puedes añadir o eliminar. No se pueden eliminar si están en uso.</p>
+          <div id="tipos-list">${store.tipos.map(t=>`<span class="loc-chip">${esc(t)}<button data-t="${esc(t)}" title="Quitar"><i data-lucide="x"></i></button></span>`).join('')}</div>
+          <div class="addrrow"><input class="input" id="tipo-new" placeholder="Nuevo tipo…">
+            <button class="btn small" id="tipo-add"><i data-lucide="plus"></i> Añadir</button></div>
+        </div>
+      </div>
     <div class="panel"><div class="panel-head"><span class="idx">E</span><h3>Referencias fijas (se repiten solas)</h3></div>
       <div class="panel-body">
         <p style="font-size:13px;margin-bottom:12px;color:var(--mut)">Las referencias registradas aquí se <b>repiten automáticamente</b> cada semana con la cantidad del catálogo.</p>
@@ -1834,6 +1842,24 @@ function vSet(){
     store.fijas=f;
     if(!store.catalogo[ref]){ const cat={...store.catalogo}; cat[ref]=0; store.catalogo=cat; }
     toast(`Fija ${ref} registrada. Define su cantidad en el catálogo.`,'ok','pin'); vSet();
+  };
+  const paintTipos=()=>{
+    $('#tipos-list').innerHTML=store.tipos.map(t=>`<span class="loc-chip">${esc(t)}
+      <button data-t="${esc(t)}"><i data-lucide="x"></i></button></span>`).join('');
+    $$('#tipos-list button').forEach(b=>b.onclick=()=>{
+      const tipo=b.dataset.t;
+      const enUso=store.items.filter(i=>i.tipo===tipo).length;
+      if(enUso>0){ toast(`No se puede eliminar "${tipo}" porque está en uso en ${enUso} ítem(s).`,'err'); return; }
+      store.tipos=store.tipos.filter(x=>x!==tipo);
+      toast(`Tipo "${tipo}" eliminado.`,'warn','tag'); vSet();
+    });
+    icons();
+  };
+  $('#tipo-add').onclick=()=>{
+    const v=$('#tipo-new').value.trim(); if(!v)return;
+    if(store.tipos.includes(v)){toast('Ese tipo ya existe.','err');return;}
+    store.tipos=[...store.tipos,v]; $('#tipo-new').value='';
+    toast('Tipo añadido.','ok','tag'); vSet();
   };
   // --- Datos
   $('#d-exp').onclick=()=>{
