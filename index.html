@@ -470,7 +470,6 @@ const store = {
   },
   set lastPrompt(v){ _cache.lastPrompt=v; lsSet('gricol_lastprompt',v); },
 };
-};
 function logEvent(type,msg){ const L=store.log; L.unshift({ts:Date.now(),type,msg}); store.log=L; }
 
 // ---------- Clasificación base (solo por referencia) ----------
