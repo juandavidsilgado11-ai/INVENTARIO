@@ -773,7 +773,7 @@ window.closeModal=closeModal;
 const state={
   view:'dashboard',
   enter:{mode:'manual',
-    ref:'',desc:'',qty:'',tipo:TIPOS[0],loc:store.locs[0]||'',week:nowWK(),obs:'',
+    ref:'',desc:'',qty:'',tipo:store.tipos[0],loc:store.locs[0]||'',week:nowWK(),obs:'',
          imp:{text:'',week:nowWK(),loc:store.locs[0]||'',sumDup:true,marcarFijo:false,marcarCatalogo:false}},
   inv:{q:'',cls:'all',loc:'all',week:nowWK()},
   cmp:{week:nowWK()},
@@ -1023,7 +1023,7 @@ function vManual(){
         </div>
         <div class="field">
           <label>Tipo de artículo</label>
-          <select class="input" id="i-tipo">${TIPOS.map(t=>`<option ${t===e.tipo?'selected':''}>${t}</option>`).join('')}</select>
+          <select class="input" id="i-tipo">${store.tipos.map(t=>`<option ${t===e.tipo?'selected':''}>${t}</option>`).join('')}</select>
         </div>
         <div class="field">
           <label>Ubicación <b>*</b></label>
@@ -1482,7 +1482,7 @@ function editModal(id,after){
   <div class="m-body"><div class="frows">
     <div class="field full"><label>Descripción</label><input class="input" id="m-desc" value="${esc(it.desc)}"></div>
     <div class="field"><label>Cantidad</label><input class="input num" id="m-qty" type="number" min="0" value="${it.qty}"></div>
-    <div class="field"><label>Tipo</label><select class="input" id="m-tipo">${TIPOS.map(t=>`<option ${t===it.tipo?'selected':''}>${t}</option>`).join('')}</select></div>
+    <div class="field"><label>Tipo</label><select class="input" id="m-tipo">${store.tipos.map(t=>`<option ${t===it.tipo?'selected':''}>${t}</option>`).join('')}</select></div>
     <div class="field"><label>Ubicación</label><select class="input" id="m-loc">${store.locs.map(l=>`<option ${l===it.loc?'selected':''}>${esc(l)}</option>`).join('')}</select></div>
     <div class="field"><label>Semana</label><select class="input" id="m-week">${[...new Set([it.week,nowWK(),...store.items.map(x=>x.week)])].sort((a,b)=>b.localeCompare(a)).map(w=>`<option ${w===it.week?'selected':''}>${w}</option>`).join('')}</select></div>
     <div class="field full"><label>Observaciones</label><textarea class="input" id="m-obs-edit">${esc(it.obs)}</textarea></div>
