@@ -426,10 +426,6 @@ const fmtTs = ts=>{const d=new Date(ts);return `${String(d.getDate()).padStart(2
 const DEF_LOCS = ['Bodega Central','Zona de Muestras','Oficina Técnica','Andén 1','Andén 2','Cuarentena','Patio de Cargas'];
   const IMG_BASE = 'https://juandavidsilgado11-ai.github.io/INVENTARIO/imagenes/';
 const TIPOS_DEFAULT = ['Producto nuevo','Desarme'];
-const TIPOS = {
-  get(){ return store.tipos },
-  has(t){ return this.get().includes(t) }
-};
 var _cache = {};
 
 const store = {
@@ -473,6 +469,11 @@ const store = {
     return _cache.lastPrompt;
   },
   set lastPrompt(v){ _cache.lastPrompt=v; lsSet('gricol_lastprompt',v); },
+  get tipos(){
+    if(_cache.tipos===undefined) _cache.tipos = lsGet('gricol_tipos',TIPOS_DEFAULT);
+    return _cache.tipos;
+  },
+  set tipos(v){ _cache.tipos=v; lsSet('gricol_tipos',v); },
 };
 function logEvent(type,msg){ const L=store.log; L.unshift({ts:Date.now(),type,msg}); store.log=L; }
 
