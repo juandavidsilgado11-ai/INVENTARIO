@@ -361,6 +361,7 @@ tfoot td{padding:11px 10px;border-top:2px solid var(--ink);font-family:var(--fd)
   thead th{border-color:#000}
 }
 </style>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 </head>
 <body>
 
@@ -1645,6 +1646,8 @@ function vRep(){
     <div class="spacer" style="flex:1"></div>
     <button class="btn small" id="rep-csv-wk"><i data-lucide="file-spreadsheet"></i> CSV semana</button>
     <button class="btn small" id="rep-csv-all"><i data-lucide="download"></i> CSV todo</button>
+    <button class="btn small primary" id="rep-xls-wk"><i data-lucide="file-spreadsheet"></i> Excel semana</button>
+        <button class="btn small primary" id="rep-xls-all"><i data-lucide="download"></i> Excel todo</button>
     <button class="btn small" id="rep-print"><i data-lucide="printer"></i> Imprimir</button>
   </div>
   <div class="subnav no-print">${tabs.map(([k,l])=>`<button data-t="${k}" class="${r.tab===k?'on':''}">${l}</button>`).join('')}</div>
@@ -1654,10 +1657,191 @@ function vRep(){
   $$('.subnav button').forEach(b=>b.onclick=()=>{r.tab=b.dataset.t;vRep();});
   $('#rep-csv-wk').onclick=()=>{dlCSV(`gricol_reporte_${wk}.csv`,[CSV_HEAD,...itemsOfWeek(wk).map(itemRow)]);toast('CSV de la semana descargado.','ok','download');};
   $('#rep-csv-all').onclick=()=>{dlCSV('gricol_inventario_completo.csv',[CSV_HEAD,...store.items.map(itemRow)]);toast('CSV completo descargado.','ok','download');};
+  $('#rep-xls-wk').onclick=()=>descargarExcel(wk);
+  $('#rep-xls-all').onclick=()=>descargarExcel('all');
   $('#rep-print').onclick=()=>window.print();
 }
 
 // ================= 06 · AJUSTES =================
+  / ================= EXCEL CON FOTOS =================
+async function descargarExcel(semana){
+  // semana puede ser una semana específica o 'all'
+  const itemsFiltrados = semana==='all'
+    ? store.items
+    : store.items.filter(i=>i.week===semana);
+
+  if(!itemsFiltrados.length){
+    toast('No hay ítems para exportar.','warn','alert-triangle');
+    return;
+  }
+
+  // Agrupar por categoría
+  const grupos = {
+    fixed:    {nombre:'Inventario Fijo', items:[]},
+    excess:   {nombre:'Excedentes', items:[]},
+    move:     {nombre:'Trasladar', items:[]},
+    release:  {nombre:'Liberar', items:[]},
+    import:   {nombre:'Muestras Importación', items:[]},
+    assay:    {nombre:'Muestras Ensayo', items:[]},
+    general:  {nombre:'General', items:itemsFiltrados}
+  };
+
+  for(const it of itemsFiltrados){
+    const c = classify(it.ref, it.tipo, it.week, it.qty);
+    if(c.excedente>0) grupos.excess.items.push(it);
+    else if(c.kind==='fixed') grupos.fixed.items.push(it);
+    else if(c.kind==='move') grupos.move.items.push(it);
+    else if(c.kind==='release') grupos.release.items.push(it);
+    else if(c.kind==='import') grupos.import.items.push(it);
+    else if(c.kind==='assay') grupos.assay.items.push(it);
+  }
+
+  // Contar fotos totales
+  const totalFotos = itemsFiltrados.length;
+  let fotosDescargadas = 0;
+
+  // Modal de progreso
+  openModal(`<div class="m-head"><i data-lucide="file-spreadsheet"></i><h3>Generando Excel…</h3></div>
+    <div class="m-body">
+      <p style="font-size:14px;margin-bottom:14px">Preparando archivo. Esto puede tardar 10-30 segundos con fotos.</p>
+      <div style="background:var(--dim);height:20px;border:1.5px solid var(--ink);position:relative">
+        <div id="prog-bar" style="background:var(--r-600);height:100%;width:0%;transition:width .2s"></div>
+      </div>
+      <p id="prog-txt" style="font-size:13px;color:var(--mut);margin-top:10px;text-align:center">0 / ${totalFotos}</p>
+    </div>`);
+
+  const actualizarProgreso = ()=>{
+    const pct = Math.round(fotosDescargadas/totalFotos*100);
+    const bar = document.getElementById('prog-bar');
+    const txt = document.getElementById('prog-txt');
+    if(bar) bar.style.width = pct+'%';
+    if(txt) txt.textContent = `${fotosDescargadas} / ${totalFotos} (${pct}%)`;
+  };
+
+  // Descargar fotos primero
+  const fotos = {};
+  for(const it of itemsFiltrados){
+    const ref = it.ref.toUpperCase();
+    if(fotos[ref]!==undefined){ fotosDescargadas++; actualizarProgreso(); continue; }
+    try{
+      const urlPng = IMG_BASE + encodeURIComponent(ref) + '.png';
+      let resp = await fetch(urlPng);
+      if(!resp.ok){
+        const urlJpg = IMG_BASE + encodeURIComponent(ref) + '.jpg';
+        resp = await fetch(urlJpg);
+      }
+      if(resp.ok){
+        const blob = await resp.blob();
+        const base64 = await new Promise(res=>{
+          const r = new FileReader();
+          r.onload = ()=>res(r.result);
+          r.readAsDataURL(blob);
+        });
+        fotos[ref] = base64;
+      } else {
+        fotos[ref] = null;
+      }
+    }catch(e){
+      fotos[ref] = null;
+    }
+    fotosDescargadas++;
+    actualizarProgreso();
+  }
+
+  // Crear workbook
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'GRICOL S.A.';
+  wb.created = new Date();
+
+  // Función auxiliar para crear una hoja
+  const crearHoja = (nombre, items, conFotos)=>{
+    const ws = wb.addWorksheet(nombre);
+    ws.columns = [
+      {header:'Referencia', key:'ref', width:18},
+      {header:'Descripción', key:'desc', width:42},
+      {header:'Cantidad', key:'qty', width:10, style:{alignment:{horizontal:'right'}}},
+      {header:'Tipo', key:'tipo', width:18},
+      {header:'Clasificación', key:'cls', width:22},
+      {header:'Ubicación', key:'loc', width:22},
+      {header:'Semana', key:'week', width:20},
+      {header:'Observaciones', key:'obs', width:40},
+      {header:'Foto', key:'foto', width:18}
+    ];
+
+    // Estilo del encabezado
+    const head = ws.getRow(1);
+    head.height = 24;
+    head.eachCell(c=>{
+      c.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFB01E23'}};
+      c.font = {bold:true, color:{argb:'FFFFFFFF'}, size:11};
+      c.alignment = {vertical:'middle', horizontal:'center'};
+      c.border = {
+        top:{style:'thin'}, left:{style:'thin'},
+        bottom:{style:'thin'}, right:{style:'thin'}
+      };
+    });
+
+    // Añadir filas
+    for(let i=0; i<items.length; i++){
+      const it = items[i];
+      const c = classify(it.ref, it.tipo, it.week, it.qty);
+      const row = ws.addRow({
+        ref: it.ref,
+        desc: it.desc,
+        qty: it.qty,
+        tipo: it.tipo,
+        cls: c.label,
+        loc: it.loc,
+        week: fmtW(it.week),
+        obs: it.obs || ''
+      });
+      row.height = 60;
+      row.eachCell(cell=>{
+        cell.border = {
+          top:{style:'thin', color:{argb:'FFCCCCCC'}},
+          left:{style:'thin', color:{argb:'FFCCCCCC'}},
+          bottom:{style:'thin', color:{argb:'FFCCCCCC'}},
+          right:{style:'thin', color:{argb:'FFCCCCCC'}}
+        };
+        cell.alignment = {vertical:'middle', wrapText:true};
+      });
+
+      // Insertar foto
+      if(conFotos && fotos[it.ref.toUpperCase()]){
+        const imgId = wb.addImage({
+          base64: fotos[it.ref.toUpperCase()],
+          extension: 'png'
+        });
+        ws.addImage(imgId, {
+          tl:{col:8, row:i+1},
+          ext:{width:60, height:60}
+        });
+      }
+    }
+  };
+
+  // Crear las 7 hojas
+  crearHoja('Inventario Fijo', grupos.fixed.items, true);
+  crearHoja('Excedentes', grupos.excess.items, true);
+  crearHoja('Trasladar', grupos.move.items, true);
+  crearHoja('Liberar', grupos.release.items, true);
+  crearHoja('Muestras Importación', grupos.import.items, true);
+  crearHoja('Muestras Ensayo', grupos.assay.items, true);
+  crearHoja('General', grupos.general.items, true);
+
+  // Descargar
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `GRICOL_Inventario_${semana==='all'?'Todo':semana}.xlsx`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  closeModal();
+  toast('Excel descargado.','ok','file-spreadsheet');
+}
 function vSet(){
   $('#view').innerHTML=secHead('06','Ajustes','CONFIGURACIÓN LOCAL')+`
   <div class="set-grid">
