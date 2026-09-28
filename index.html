@@ -689,8 +689,9 @@ function repetirFijas(wk){
     if(yaExisten.has(ref)) continue;
     const qty=Number(store.catalogo[ref] ?? 0);
     if(!qty) continue;
-    nuevos.push({id:uid(),ref,desc:meta.desc||'—',qty,tipo:meta.tipo||'Otro',loc:meta.loc||(store.locs[0]||''),week:wk,obs:'Repetido automáticamente (inventario fijo)',ts:Date.now(),auto:true});
-    added++;
+    const prevIt=store.items.filter(i=>i.ref===ref && i.week!==wk).sort((a,b)=>b.ts-a.ts)[0];
+      const obsAnterior=prevIt ? (prevIt.obs||'') : '';
+      nuevos.push({id:uid(),ref,desc:meta.desc||'—',qty,tipo:meta.tipo||'Otro',loc:meta.loc||(store.locs[0]||''),week:wk,obs:obsAnterior,ts:Date.now(),auto:true});
   }
   if(nuevos.length){ store.items=[...store.items,...nuevos]; logEvent('ingreso',`Repetición automática de ${added} referencia(s) fija(s) en ${wk}`); }
   return added;
