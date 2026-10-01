@@ -1037,7 +1037,7 @@ function vManual(){
         </div>
         <div class="field full">
           <label>Observaciones</label>
-          <textarea class="input" id="i-obs" placeholder="Notas del ítem (opcional)">${esc(e.obs)}</textarea>
+          <textarea class="input" id="i-obs" placeholder="Notas del ítem (opcional)" oninput="state.enter.obs=this.value">${esc(e.obs)}</textarea>
         </div>
       </div>
       <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
@@ -1045,7 +1045,6 @@ function vManual(){
         <button class="btn" type="button" id="i-clear"><i data-lucide="rotate-ccw"></i> Limpiar</button>
       </div>
     </form>
-
     <aside class="verdict no-print">
       <div class="vd-head">CLASIFICACIÓN AUTOMÁTICA — TIEMPO REAL</div>
       <div class="vd-stage" id="vd-stage"></div>
