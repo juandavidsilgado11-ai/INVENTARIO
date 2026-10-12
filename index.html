@@ -435,7 +435,7 @@ const store = {
     if(_cache.items===undefined) _cache.items = lsGet('gricol_items',[]);
     return _cache.items;
   },
-  set items(v){ _cache.items=v; lsSet('gricol_items',v); },
+  set items(v){ _cache.items=v; lsSet('gricol_items',v); clearTimeout(window._syncTimer); window._syncTimer = setTimeout(()=>guardarEnSheets(), 1000); },
   get log(){
     if(_cache.log===undefined) _cache.log = lsGet('gricol_log',[]);
     return _cache.log;
@@ -2148,7 +2148,27 @@ function vSet(){
     </div>
     <div class="m-foot"><button class="btn" onclick="closeModal()">Cerrar</button></div>`);
 }
-if(sessGet()) renderApp(); else renderLogin();
+(async function arranque(){
+  if(sessGet()){
+    // Hay sesión guardada: intentar cargar de Sheets
+    const n = await cargarDesdeSheets();
+    if(n >= 0){
+      // Éxito (n = cantidad de ítems, o 0 si la hoja está vacía)
+      const localCount = (JSON.parse(localStorage.getItem('gricol_items')||'[]')).length;
+      if(n === 0 && localCount > 0){
+        // La hoja está vacía pero tenemos datos locales → subirlos
+        toast('Subiendo datos locales a Google Sheets...','warn','cloud-upload');
+        await guardarEnSheets();
+      }
+      renderApp();
+    } else {
+      // Error de conexión: usar datos locales
+      renderApp();
+    }
+  } else {
+    renderLogin();
+  }
+})();
 </script>
 </body>
 </html>
