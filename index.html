@@ -426,6 +426,7 @@ const fmtTs = ts=>{const d=new Date(ts);return `${String(d.getDate()).padStart(2
 // ---------- Almacenamiento ----------
 const DEF_LOCS = ['Bodega Central','Zona de Muestras','Oficina Técnica','Andén 1','Andén 2','Cuarentena','Patio de Cargas'];
   const IMG_BASE = 'https://juandavidsilgado11-ai.github.io/INVENTARIO/imagenes/';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbwxwFZxGO6lTC8YEHOK51voVZVzvBeePFjncwQ7Wvv0j-P93rTOvR1LHz9vkfB8KOdm/exec';
 const TIPOS_DEFAULT = ['Producto nuevo','Desarme'];
 var _cache = {};
 
@@ -477,7 +478,52 @@ const store = {
   set tipos(v){ _cache.tipos=v; lsSet('gricol_tipos',v); },
 };
 function logEvent(type,msg){ const L=store.log; L.unshift({ts:Date.now(),type,msg}); store.log=L; }
+async function cargarDesdeSheets(){
+  try{
+    const resp = await fetch(API_URL + '?t=' + Date.now());
+    const data = await resp.json();
+    if(!data.ok) throw new Error(data.error || 'Error desconocido');
+    if(Array.isArray(data.items) && data.items.length){
+      const items = data.items.map(function(r){
+        return {
+          id: r.id || uid(),
+          ref: String(r.ref || '').toUpperCase(),
+          desc: r.desc || '—',
+          qty: Number(r.qty) || 0,
+          tipo: r.tipo || 'Otro',
+          loc: r.loc || '',
+          week: r.week || '',
+          obs: r.obs || '',
+          ts: Number(r.ts) || Date.now()
+        };
+      }).filter(i => i.ref);
+      _cache.items = items;
+      lsSet('gricol_items', items);
+      return items.length;
+    }
+    return 0;
+  }catch(err){
+    console.error('Error al cargar de Sheets:', err);
+    toast('No se pudo conectar con Google Sheets. Usando datos locales.','warn','wifi-off');
+    return -1;
+  }
+}
 
+async function guardarEnSheets(){
+  try{
+    const items = store.items;
+    await fetch(API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type':'text/plain'},
+      body: JSON.stringify({accion:'guardarTodo', items:items})
+    });
+    return true;
+  }catch(err){
+    console.error('Error al guardar en Sheets:', err);
+    return false;
+  }
+}
 // ---------- Clasificación base (solo por referencia) ----------
 function firstSeenWeek(ref){
   let best=null;
