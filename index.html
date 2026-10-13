@@ -2152,6 +2152,7 @@ function vSet(){
         <p style="font-size:13.5px;margin-bottom:16px">Respalda o restablece la información guardada en este navegador.</p>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn small" id="d-exp"><i data-lucide="download"></i> Respaldo JSON</button>
+          <button class="btn small primary" id="d-refresh"><i data-lucide="refresh-cw"></i> Recargar desde Sheets</button>
           <button class="btn small" id="d-imp-btn"><i data-lucide="file-up"></i> Importar respaldo</button>
           <input type="file" id="d-imp" accept=".json" hidden>
           <button class="btn small" id="d-seed"><i data-lucide="database"></i> Cargar ejemplo</button>
@@ -2280,6 +2281,21 @@ function vSet(){
     a.href=URL.createObjectURL(new Blob([JSON.stringify({items:store.items,locs:store.locs,cfg:store.cfg,log:store.log,catalogo:store.catalogo,fijas:store.fijas},null,2)],{type:'application/json'}));
     a.download='gricol_respaldo.json'; a.click(); URL.revokeObjectURL(a.href);
     toast('Respaldo descargado.','ok','download');
+  };
+  $('#d-refresh').onclick=()=>{
+    toast('Cargando desde Google Sheets...','warn','refresh-cw');
+    cargarDesdeSheets().then(n=>{
+      if(n > 0){
+        repetirFijas(nowWK());
+        renderView();
+        toast(`✓ Cargados ${n} ítems desde Sheets.`,'ok','cloud-download');
+      } else if(n === 0){
+        toast('La hoja de Sheets está vacía.','warn','alert-triangle');
+        renderView();
+      } else {
+        toast('No se pudo conectar con Sheets.','err','wifi-off');
+      }
+    });
   };
   $('#d-imp-btn').onclick=()=>$('#d-imp').click();
   $('#d-imp').onchange=e=>{
