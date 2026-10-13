@@ -1257,9 +1257,14 @@ function vManual(){
     state.enter[id.slice(2)]=$('#'+id).value; refresh();}));
   ['i-tipo','i-loc','i-week'].forEach(id=>$('#'+id).addEventListener('change',()=>{
     state.enter[id.slice(2)]=$('#'+id).value; refresh();}));
-  // Detectar cambio en referencia/cantidad para memoria entre semanas
-  ['i-ref','i-qty'].forEach(id=>$('#'+id).addEventListener('change',()=>{
-    state.enter[id.slice(2)]=$('#'+id).value; onEnterRefQtyChange();}));
+   // Detectar al salir del campo referencia/cantidad para memoria entre semanas
+  ['i-ref','i-qty'].forEach(id=>$('#'+id).addEventListener('blur',()=>{
+    state.enter[id.slice(2)]=$('#'+id).value;
+    if(state.enter.ref && state.enter.qty){
+      const q = Number(state.enter.qty);
+      if(q > 0) onEnterRefQtyChange();
+    }
+  }));
   $('#i-clear').onclick=()=>{Object.assign(state.enter,{ref:'',desc:'',qty:'',obs:''});
     vManual(); toast('Formulario limpio.','ok','rotate-ccw');};
   $('#f-item').onsubmit=ev=>{
