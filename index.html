@@ -1562,9 +1562,26 @@ function vImport(){
         var catC={...store.catalogo};
         if(catC[g.ref]==null){ catC[g.ref]=g.qty; store.catalogo=catC; catReg++; }
       }
-      const c=classify(g.ref,g.tipo,g.week,g.qty);
+       const c=classify(g.ref,g.tipo,g.week,g.qty);
       let qtyBase=g.qty, excedente=0;
-      if(c.excedente>0){ qtyBase=c.cantidadBase; excedente=c.excedente; }
+      // PRIORIDAD 1: memoria entre semanas
+      const prev = prevWeekData(g.ref, g.week);
+      if(prev && g.qty > prev.qty){
+        qtyBase = prev.qty;
+        excedente = g.qty - prev.qty;
+        if(!g.loc && prev.loc) g.loc = prev.loc;
+        if(!g.obs && prev.obs) g.obs = prev.obs;
+      }
+      // PRIORIDAD 2: catálogo (para fijas)
+      else if(c.excedente>0){
+        qtyBase=c.cantidadBase;
+        excedente=c.excedente;
+      }
+      // MISMA cantidad → heredar ubicación/obs si Excel viene vacío
+      else if(prev && g.qty === prev.qty){
+        if(!g.loc && prev.loc) g.loc = prev.loc;
+        if(!g.obs && prev.obs) g.obs = prev.obs;
+      }
       const dup=items.find(i=>i.week===g.week && i.ref===g.ref);
       if(dup){
         if(im.sumDup){ dup.qty+=qtyBase; dup.ts=Date.now(); if(g.desc)dup.desc=g.desc;
