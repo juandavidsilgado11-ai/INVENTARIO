@@ -530,6 +530,140 @@ function firstSeenWeek(ref){
   for(const it of store.items) if(it.ref===ref && (best===null || it.week<best)) best=it.week;
   return best;
 }
+  function prevWeekData(ref, currentWeek){
+  const r = String(ref||'').trim().toUpperCase();
+  if(!r) return null;
+  let bestWeek = null;
+  for(const it of store.items){
+    if(String(it.ref||'').trim().toUpperCase() === r && it.week !== currentWeek){
+      if(bestWeek === null || it.week > bestWeek) bestWeek = it.week;
+    }
+  }
+  if(!bestWeek) return null;
+  const items = store.items.filter(i =>
+    String(i.ref||'').trim().toUpperCase() === r && i.week === bestWeek);
+  if(!items.length) return null;
+  return {
+    week: bestWeek,
+    qty : items.reduce((s,i)=> s + (Number(i.qty)||0), 0),
+    loc : items[0].loc || '',
+    obs : items.map(i=>i.obs).filter(Boolean).join(' · '),
+    desc: items[0].desc || '',
+    tipo: items[0].tipo || ''
+  };
+}
+  function onEnterRefQtyChange(){
+  const e = state.enter;
+  const ref = String(e.ref||'').trim();
+  const q   = Number(e.qty);
+  e._split = null;
+  if(!ref || e.qty==='' || isNaN(q) || q<=0){ vManual(); return; }
+
+  const prev = prevWeekData(ref, e.week);
+  e._prevInfo = prev || null;
+  if(!prev){ vManual(); return; }
+
+  if(!e.desc && prev.desc) e.desc = prev.desc;
+
+  if(q === prev.qty){
+    if(prev.loc) e.loc = prev.loc;
+    if(prev.obs) e.obs = prev.obs;
+    toast(`✔ ${ref.toUpperCase()} ya estaba en ${fmtW(prev.week)}: ${prev.qty} und en "${prev.loc||'—'}". Ubicación y observaciones copiadas.`,'ok','copy');
+  }
+  else if(q > prev.qty){
+    if(prev.loc) e.loc = prev.loc;
+    if(prev.obs) e.obs = prev.obs;
+    openExcessQuestion(ref.toUpperCase(), prev, q);
+  }
+  else{
+    if(prev.loc) e.loc = prev.loc;
+    if(prev.obs) e.obs = prev.obs;
+    toast(`⚠ ${ref.toUpperCase()}: la semana pasada había ${prev.qty} und y ahora registras ${q} (faltan ${prev.qty-q}).`,'warn','alert-triangle');
+  }
+  vManual();
+}
+
+// Modal: ¿el excedente se queda donde siempre o cambia?
+function openExcessQuestion(ref, prev, newQty){
+  const exc = newQty - prev.qty;
+  const html = `
+  <div class="m-head"><i data-lucide="package-plus"></i><h3>Cantidad adicional · ${esc(ref)}</h3></div>
+  <div class="m-body">
+    <p style="font-size:13.5px">En <b>${fmtW(prev.week)}</b> tenías <b>${prev.qty} und</b> en <b>${esc(prev.loc||'—')}</b>.</p>
+    <p style="font-size:13.5px;margin-top:4px">Ahora estás ingresando <b>${newQty} und</b> → hay <b style="color:var(--r-600)">${exc} und adicional(es)</b>.</p>
+    <p style="font-size:13.5px;margin:14px 0 8px"><b>¿Qué haces con la cantidad adicional?</b></p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <label style="display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--ink);padding:12px;cursor:pointer">
+        <input type="radio" name="exc-opt" value="keep" checked>
+        <span><b>Dejarlas donde siempre</b><br><small style="color:var(--mut)">Misma ubicación (${esc(prev.loc||'—')}). Las ${exc} und quedan como <b>excedente → LIBERAR</b>.</small></span>
+      </label>
+      <label style="display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--ink);padding:12px;cursor:pointer">
+        <input type="radio" name="exc-opt" value="change">
+        <span><b>Cambiar ubicación / observaciones</b><br><small style="color:var(--mut)">Las ${exc} und se registran aparte con los datos que indiques abajo.</small></span>
+      </label>
+    </div>
+    <div id="exc-extra" style="display:none;margin-top:14px;border-top:1.5px dashed var(--mut);padding-top:12px">
+      <div class="field"><label>Ubicación del excedente</label>
+        <select class="input" id="exc-loc">${store.locs.map(l=>`<option ${l===prev.loc?'selected':''}>${esc(l)}</option>`).join('')}</select></div>
+      <div class="field" style="margin-top:10px"><label>Observaciones del excedente</label>
+        <textarea class="input" id="exc-obs" placeholder="Ej: ingreso extra del viernes"></textarea></div>
+    </div>
+  </div>
+  <div class="m-foot">
+    <button class="btn" onclick="closeModal();vManual()">Cancelar</button>
+    <button class="btn primary" id="exc-ok"><i data-lucide="check"></i> Aplicar</button>
+  </div>`;
+  openModal(html);
+
+  document.querySelectorAll('input[name="exc-opt"]').forEach(r=>{
+    r.addEventListener('change', ()=>{
+      const v = document.querySelector('input[name="exc-opt"]:checked').value;
+      $('#exc-extra').style.display = (v==='change') ? 'block' : 'none';
+    });
+  });
+
+  $('#exc-ok').onclick = ()=>{
+    const v = document.querySelector('input[name="exc-opt"]:checked').value;
+    const e = state.enter;
+    e._split = {
+      baseQty: prev.qty,
+      excQty : exc,
+      loc    : v==='keep' ? (prev.loc || store.locs[0] || '') : $('#exc-loc').value,
+      obs    : v==='keep'
+        ? ((prev.obs?prev.obs+' · ':'') + `Excedente ${exc} und → LIBERAR`)
+        : ($('#exc-obs').value.trim() || `Excedente ${exc} und → LIBERAR`)
+    };
+    closeModal();
+    toast(`Base ${prev.qty} und heredada de ${fmtW(prev.week)}. Excedente de ${exc} und se registrará aparte como LIBERAR.`,'ok','split');
+    vManual();
+  };
+}
+
+// Guardado del ingreso manual (usa memoria + split)
+function commitEnterItems(){
+  const e   = state.enter;
+  const ref = String(e.ref||'').trim().toUpperCase();
+  const qty = Number(e.qty);
+  const nuevos = [{
+    id: uid(), ref, desc: e.desc || '—', qty,
+    tipo: e.tipo || 'Otro', loc: e.loc || '',
+    week: e.week, obs: e.obs || '', ts: Date.now()
+  }];
+  if(e._split){
+    const s = e._split;
+    nuevos[0].qty = s.baseQty;
+    nuevos.push({
+      id: uid(), ref: ref + '-EXC', desc: e.desc || '—',
+      qty: s.excQty, tipo: e.tipo || 'Otro',
+      loc: s.loc, week: e.week, obs: s.obs || '', ts: Date.now()
+    });
+    logEvent('excedente', `${ref} · excedente de ${s.excQty} und → LIBERAR (${s.loc})`);
+  }
+  e._split = null; e._prevInfo = null;
+  store.items = [...store.items, ...nuevos];
+  logEvent('ingreso', `${ref} · ${nuevos[0].qty} und en ${nuevos[0].loc||'—'} (${e.week})`);
+  return nuevos;
+}
 function classifyBase(ref,tipo,wk){
   const r=(ref||'').toUpperCase(), th=store.cfg.threshold;
   if(/^ENS-/.test(r)||r.includes('ENSAYO'))
@@ -736,10 +870,28 @@ function repetirFijas(wk){
     const qty=Number(store.catalogo[ref] ?? 0);
     if(!qty) continue;
     const prevIt=store.items.filter(i=>i.ref===ref && i.week!==wk).sort((a,b)=>b.ts-a.ts)[0];
-      const obsAnterior=prevIt ? (prevIt.obs||'') : '';
-      nuevos.push({id:uid(),ref,desc:meta.desc||'—',qty,tipo:meta.tipo||'Otro',loc:meta.loc||(store.locs[0]||''),week:wk,obs:obsAnterior,ts:Date.now(),auto:true});
+    const locAnterior=prevIt ? (prevIt.loc||'') : (meta.loc || store.locs[0] || '');
+    const obsAnterior=prevIt ? (prevIt.obs||'') : '';
+    const descAnterior=prevIt ? (prevIt.desc||'') : (meta.desc || '—');
+    const tipoAnterior=prevIt ? (prevIt.tipo||'') : (meta.tipo || 'Otro');
+    nuevos.push({
+      id:uid(),
+      ref,
+      desc:descAnterior,
+      qty,
+      tipo:tipoAnterior,
+      loc:locAnterior,
+      week:wk,
+      obs:obsAnterior,
+      ts:Date.now(),
+      auto:true
+    });
+    added++;
   }
-  if(nuevos.length){ store.items=[...store.items,...nuevos]; logEvent('ingreso',`Repetición automática de ${added} referencia(s) fija(s) en ${wk}`); }
+  if(nuevos.length){
+    store.items=[...store.items,...nuevos];
+    logEvent('ingreso',`Repetición automática de ${added} referencia(s) fija(s) en ${wk} — ubicación y observaciones conservadas`);
+  }
   return added;
 }
 
@@ -749,9 +901,9 @@ function checkWeeklyPrompt(){
   const last=store.lastPrompt;
   if(last===wk) return;               // ya se preguntó esta semana
   const prev=prevWK(wk);
-  const prevItems=itemsOfWeek(prev).filter(i=>{
+   const prevItems=itemsOfWeek(prev).filter(i=>{
     const r=i.ref.toUpperCase();
-    return /^IMP-/.test(r)||/^ENS-/.test(r)||r.includes('IMPORT')||r.includes('ENSAYO');
+    return !store.fijas[i.ref] && !/-EXC$/.test(r);
   });
   // Si no hay nada que preguntar, marcar la semana y salir
   if(!prevItems.length){ store.lastPrompt=wk; return; }
@@ -774,7 +926,7 @@ function openKeepModal(wk,prevItems){
           <span class="kr">${esc(r.ref)}</span>
           <span class="kd">${esc(r.desc)}</span>
           <span class="kq num">${r.qty} und</span>
-          <span class="kl">${/^IMP-|IMPORT/i.test(r.ref)?'Import':'Ensayo'}</span>
+          <span class="kl">${/^IMP-|IMPORT/i.test(r.ref)?'Import':(/^ENS-|ENSAYO/i.test(r.ref)?'Ensayo':'Traslado')}</span>
         </label>`).join('')}
       </div>
       <p style="margin-top:12px;font-size:12px;color:var(--mut)">Las referencias <b>fijas</b> se repiten solas, no necesitas marcarlas aquí.</p>
@@ -1105,6 +1257,9 @@ function vManual(){
     state.enter[id.slice(2)]=$('#'+id).value; refresh();}));
   ['i-tipo','i-loc','i-week'].forEach(id=>$('#'+id).addEventListener('change',()=>{
     state.enter[id.slice(2)]=$('#'+id).value; refresh();}));
+  // Detectar cambio en referencia/cantidad para memoria entre semanas
+  ['i-ref','i-qty'].forEach(id=>$('#'+id).addEventListener('change',()=>{
+    state.enter[id.slice(2)]=$('#'+id).value; onEnterRefQtyChange();}));
   $('#i-clear').onclick=()=>{Object.assign(state.enter,{ref:'',desc:'',qty:'',obs:''});
     vManual(); toast('Formulario limpio.','ok','rotate-ccw');};
   $('#f-item').onsubmit=ev=>{
@@ -1116,16 +1271,13 @@ function vManual(){
     $('#e-qty').classList.toggle('show',state.enter.qty===''||isNaN(qty)||qty<0); if(isNaN(qty)||qty<0||state.enter.qty==='')ok=false;
     if(!ok) return;
     const wk=state.enter.week;
-    const c=classify(ref,state.enter.tipo,wk,qty);
-    // Detectar excedente ANTES de guardar
-    let excedenteCreado=0;
-    let qtyBase=qty;
-    if(c.excedente>0){
-      qtyBase=c.cantidadBase;
-      excedenteCreado=c.excedente;
-    }
+    // Verificar duplicado antes
     const dup=store.items.find(i=>i.week===wk && i.ref===ref);
     if(dup){
+      // Ya existe: comportamiento antiguo (sumar)
+      const c=classify(ref,state.enter.tipo,wk,qty);
+      let excedenteCreado=0, qtyBase=qty;
+      if(c.excedente>0){ qtyBase=c.cantidadBase; excedenteCreado=c.excedente; }
       dup.qty+=qtyBase;
       if(state.enter.desc) dup.desc=state.enter.desc;
       if(state.enter.obs) dup.obs=dup.obs?dup.obs+' · '+state.enter.obs:state.enter.obs;
@@ -1133,25 +1285,34 @@ function vManual(){
       store.items=[...store.items];
       logEvent('ingreso',`${ref} · suma de ${qtyBase} und (total ${dup.qty}) en ${state.enter.loc} — ${wk}`);
       toast(`La referencia ya existía en ${wk}: se sumaron ${qtyBase} und (total ${dup.qty}).`,'warn','git-merge');
-    } else {
-      store.items=[...store.items,{id:uid(),ref,desc:state.enter.desc.trim()||'—',qty:qtyBase,
-        tipo:state.enter.tipo,loc:state.enter.loc,week:wk,obs:state.enter.obs.trim(),ts:Date.now()}];
-      logEvent('ingreso',`${ref} · ${state.enter.desc.trim()||'sin descripción'} — ${qtyBase} und en ${state.enter.loc} — ${wk}`);
-      toast(`Ítem registrado en ${wk}. Clasificado: ${c.label}.`,'ok','stamp');
-    }
-    // Crear ítem de excedente
-    if(excedenteCreado>0){
-      const refExc=ref+'-EXC';
-      const yaExc=store.items.find(i=>i.week===wk && i.ref===refExc);
-      if(yaExc){ yaExc.qty+=excedenteCreado; yaExc.ts=Date.now(); }
-      else {
-        store.items=[...store.items,{id:uid(),ref:refExc,desc:(state.enter.desc||c.label)+' (excedente)',qty:excedenteCreado,
+      if(excedenteCreado>0){
+        const refExc=ref+'-EXC';
+        const yaExc=store.items.find(i=>i.week===wk && i.ref===refExc);
+        if(yaExc){ yaExc.qty+=excedenteCreado; yaExc.ts=Date.now(); }
+        else store.items=[...store.items,{id:uid(),ref:refExc,desc:(state.enter.desc||c.label)+' (excedente)',qty:excedenteCreado,
           tipo:state.enter.tipo,loc:state.enter.loc,week:wk,obs:`Excedente de ${ref} · cantidad base ${c.cantidadBase} und`,ts:Date.now()}];
+        logEvent('excedente',`${ref} · ${excedenteCreado} und excedentes → LIBERAR`);
+        toast(`Excedente detectado: ${excedenteCreado} und → LIBERAR.`,'warn','alert-triangle');
       }
-      logEvent('excedente',`${ref} · ${excedenteCreado} und excedentes creados como ${refExc} → LIBERAR`);
-      toast(`Excedente detectado: ${excedenteCreado} und marcados como LIBERAR.`,'warn','alert-triangle');
+    } else {
+      // Referencia nueva: usar memoria + commitEnterItems
+      if(!state.enter._prevInfo){
+        const prev = prevWeekData(ref, wk);
+        if(prev){
+          state.enter._prevInfo = prev;
+          if(qty === prev.qty){
+            state.enter.loc = prev.loc || state.enter.loc;
+            state.enter.obs = prev.obs || state.enter.obs;
+          } else if(qty > prev.qty){
+            state.enter.loc = prev.loc || state.enter.loc;
+            state.enter.obs = prev.obs || state.enter.obs;
+          }
+        }
+      }
+      commitEnterItems();
+      toast(`Ítem registrado en ${wk}.`,'ok','stamp');
     }
-    Object.assign(state.enter,{ref:'',desc:'',qty:'',obs:''});
+    Object.assign(state.enter,{ref:'',desc:'',qty:'',obs:'',_prevInfo:null,_split:null});
     vManual();
   };
   updateVerdict(true);
